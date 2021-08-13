@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog][clog], and this project adheres to [Se
 
 ## [Unreleased]
 
+### Added
+- Allow getting the value from a single setting
+
 ## [0.1.0] - 2021-07-01
 ### Added
 - Allow including python files for settings
