@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog][clog], and this project adheres to [Se
 
 ## [Unreleased]
 
+### Added
+- Added python310 support
+
 ## [0.1.1] - 2021-08-13
 ### Added
 - Allow getting the value from a single setting
