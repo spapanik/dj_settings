@@ -3,15 +3,7 @@ import os
 from configparser import ConfigParser
 from itertools import chain
 from pathlib import Path
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    MutableMapping,
-    Union,
-    cast,
-)
+from typing import Any, Dict, Iterable, Iterator, MutableMapping, Union, cast
 
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
