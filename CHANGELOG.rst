@@ -16,6 +16,7 @@ Added
 Removed
 ^^^^^^^
 * Dropped python36 support
+* Removed the ability to include python files for settings
 
 `0.1.1`_ - 2021-08-13
 ---------------------
