@@ -31,4 +31,4 @@ Links
 
 
 .. _Changelog: https://github.com/spapanik/dj_settings/blob/main/CHANGELOG.rst
-.. _Documentation: https://dj_settings.readthedocs.io/en/latest/
+.. _Documentation: https://dj-settings.readthedocs.io/en/latest/
