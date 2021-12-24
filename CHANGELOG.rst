@@ -13,6 +13,10 @@ Added
 ^^^^^
 * Added python310 support
 
+Removed
+^^^^^^^
+* Dropped python36 support
+
 `0.1.1`_ - 2021-08-13
 ---------------------
 
