@@ -47,10 +47,6 @@ Usage
 in a way that's very familiar to all UNIX users. It allows setting default values,
 and overriding with ENV VARs.
 
-
-.. _poetry: https://python-poetry.org/
-
-
 Links
 -----
 
@@ -58,5 +54,6 @@ Links
 - `Changelog`_
 
 
+.. _poetry: https://python-poetry.org/
 .. _Changelog: https://github.com/spapanik/dj_settings/blob/main/CHANGELOG.rst
 .. _Documentation: https://dj-settings.readthedocs.io/en/latest/

@@ -2,7 +2,7 @@
 Usage
 =====
 
-*dj_settings* will try to read a variable ``VAR`` from the following locations:
+``dj_setting`` will try to read a variable ``VAR`` from the following locations:
 
 #. ``/etc/project.conf``
 #. ``~/.config/project.conf``
@@ -34,7 +34,6 @@ the value of variable ``VAR`` defined in the section ``section`` of ``project.co
 .. code-block:: python
 
     VAR = project_setting("VAR", sections=["section"], default="default")
-
 
 Under the hood
 --------------
