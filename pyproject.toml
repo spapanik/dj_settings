@@ -26,7 +26,7 @@ testpaths = "tests"
 
 [tool.poetry]
 name = "dj_settings"
-version = "0.2.0"
+version = "0.3.0"
 description = "django settings manager"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",
