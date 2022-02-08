@@ -9,6 +9,10 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+Added
+^^^^^
+* Added toml support
+
 `0.3.0`_ - 2022-01-10
 ---------------------
 

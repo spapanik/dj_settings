@@ -5,6 +5,8 @@ from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, MutableMapping, Union, cast
 
+import tomlkit
+
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
 HOME_CONF = Path.home().joinpath(".config/")
@@ -31,6 +33,10 @@ class FileReader:
             parser = ConfigParser()
             parser.read(self.path)
             return parser
+
+        if suffix == ".toml":
+            with open(self.path) as file:
+                return cast(Dict[str, Any], tomlkit.load(file))
 
         raise ValueError(f"{suffix} is not a supported extension (yet)")
 
