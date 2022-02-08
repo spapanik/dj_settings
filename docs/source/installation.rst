@@ -7,7 +7,7 @@ The easiest way is to use `poetry`_ to manage your dependencies and add *dj_sett
 .. code-block:: toml
 
     [tool.poetry.dependencies]
-    dj_settings = "^0.3.0"
+    dj_settings = "^0.4.0"
 
 
 .. _poetry: https://python-poetry.org/
