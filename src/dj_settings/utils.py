@@ -5,7 +5,7 @@ from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, MutableMapping, Union, cast
 
-import tomlkit
+import tomli
 
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
@@ -35,8 +35,8 @@ class FileReader:
             return parser
 
         if suffix == ".toml":
-            with open(self.path) as file:
-                return cast(Dict[str, Any], tomlkit.load(file))
+            with open(self.path, "rb") as binary_file:
+                return tomli.load(binary_file)
 
         raise ValueError(f"{suffix} is not a supported extension (yet)")
 
