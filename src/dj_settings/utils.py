@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, MutableMapping, Union, cast
 
 import tomli
+import yaml
 
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
@@ -37,6 +38,10 @@ class FileReader:
         if suffix == ".toml":
             with open(self.path, "rb") as binary_file:
                 return tomli.load(binary_file)
+
+        if suffix in (".yaml", ".yml"):
+            with open(self.path) as file:
+                return cast(Dict[str, Any], yaml.safe_load(file))
 
         raise ValueError(f"{suffix} is not a supported extension (yet)")
 
