@@ -23,7 +23,7 @@ dj_settings: django settings the UNIX way
 
 ``dj_settings`` offers way to add django settings in a way
 that has been battle-tested for years in numerous UNIX apps,
-reading from the value ``/etc/<conf_path>`` or ``~/.config//<conf_path>``
+reading from the value ``/etc/<conf_path>`` or ``~/.config/<conf_path>``
 or ``<proj_path>/<conf_path>`` or an ``ENV VAR``, allowing overriding
 from the next read location.
 
