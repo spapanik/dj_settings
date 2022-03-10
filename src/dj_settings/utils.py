@@ -20,8 +20,8 @@ class SectionError(KeyError):
 class FileReader:
     __slots__ = ["path"]
 
-    def __init__(self, path: Path):
-        self.path = path
+    def __init__(self, path: Union[str, Path]):
+        self.path = Path(path)
 
     @property
     def data(self) -> Dict[str, Any]:

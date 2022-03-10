@@ -9,6 +9,10 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+Added
+^^^^^
+* Allow passing the path to the FileReader as a string
+
 Changed
 ^^^^^^^
 * .conf/.ini/.cfg files are parsed as python dictionaries
