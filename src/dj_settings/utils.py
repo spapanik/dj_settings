@@ -1,9 +1,9 @@
 import json
 import os
-from configparser import ConfigParser
+from configparser import RawConfigParser
 from itertools import chain
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, MutableMapping, Union, cast
+from typing import Any, Dict, Iterable, Iterator, Union, cast
 
 import tomli
 import yaml
@@ -24,16 +24,17 @@ class FileReader:
         self.path = path
 
     @property
-    def data(self) -> MutableMapping:
+    def data(self) -> Dict[str, Any]:
         suffix = self.path.suffix
         if suffix == ".json":
             with open(self.path) as file:
                 return cast(Dict[str, Any], json.load(file))
 
         if suffix in (".conf", ".cfg", ".ini"):
-            parser = ConfigParser()
+            parser = RawConfigParser()
+            parser.optionxform = lambda option: option  # type: ignore
             parser.read(self.path)
-            return parser
+            return {key: dict(value) for key, value in parser.items()}
 
         if suffix == ".toml":
             with open(self.path, "rb") as binary_file:
