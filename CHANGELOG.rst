@@ -9,6 +9,9 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+`2.0.0`_ - 2022-03-10
+---------------------
+
 Added
 ^^^^^
 * Allow passing the path to the FileReader as a string
@@ -69,7 +72,8 @@ Added
 * Allow including python files for settings
 
 
-.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v1.0.0...main
+.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v2.0.0...main
+.. _`2.0.0`: https://github.com/spapanik/dj_settings/compare/v1.0.0...v2.0.0
 .. _`1.0.0`: https://github.com/spapanik/dj_settings/compare/v0.4.0...v1.0.0
 .. _`0.4.0`: https://github.com/spapanik/dj_settings/compare/v0.3.0...v0.4.0
 .. _`0.3.0`: https://github.com/spapanik/dj_settings/compare/v0.2.0...v0.3.0
