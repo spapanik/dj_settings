@@ -11,6 +11,7 @@ import yaml
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
 HOME_CONF = Path.home().joinpath(".config/")
+SUPPORTED_TYPES = {"json", "ini", "toml", "yaml"}
 
 
 class SectionError(KeyError):
@@ -18,33 +19,51 @@ class SectionError(KeyError):
 
 
 class FileReader:
-    __slots__ = ["path"]
+    __slots__ = ["path", "type"]
 
-    def __init__(self, path: Union[str, Path]):
+    def __init__(self, path: Union[str, Path], force_type: str = None):
         self.path = Path(path)
+        self.type = self.get_type(force_type)
+        if self.type not in SUPPORTED_TYPES:
+            raise ValueError(f"{self.type} is not a supported extension (yet)")
+
+    def get_type(self, force_type: str = None) -> str:
+        if force_type is not None:
+            return force_type
+
+        suffix = self.path.suffix
+        if suffix == ".json":
+            return "json"
+        if suffix in (".conf", ".cfg", ".ini"):
+            return "ini"
+        if suffix == ".toml":
+            return "toml"
+        if suffix in (".yaml", ".yml"):
+            return "yaml"
+
+        return None
 
     @property
     def data(self) -> Dict[str, Any]:
-        suffix = self.path.suffix
-        if suffix == ".json":
+        if self.type == "json":
             with open(self.path) as file:
                 return cast(Dict[str, Any], json.load(file))
 
-        if suffix in (".conf", ".cfg", ".ini"):
+        if self.type == "ini":
             parser = RawConfigParser()
             parser.optionxform = lambda option: option  # type: ignore
             parser.read(self.path)
             return {key: dict(value) for key, value in parser.items()}
 
-        if suffix == ".toml":
+        if self.type == "toml":
             with open(self.path, "rb") as binary_file:
                 return tomli.load(binary_file)
 
-        if suffix in (".yaml", ".yml"):
+        if self.type == "yaml":
             with open(self.path) as file:
                 return cast(Dict[str, Any], yaml.safe_load(file))
 
-        raise ValueError(f"{suffix} is not a supported extension (yet)")
+        return None
 
 
 def get_paths(filename: Path, *, base_dir: Path = None) -> Iterator[Path]:
