@@ -19,7 +19,7 @@ near the top of the settings file:
     import pathlib
     from functools import partial
 
-    from dj_settings.utils import setting
+    from dj_settings import setting
 
     BASE_DIR = pathlib.Path(__file__).resolve().parents[1]
     project_setting = partial(

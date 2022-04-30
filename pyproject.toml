@@ -27,7 +27,7 @@ testpaths = "tests"
 [tool.poetry]
 name = "dj_settings"
 version = "2.1.0"
-description = "django settings manager"
+description = "project settings the UNIX way"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",
 ]
@@ -37,9 +37,9 @@ readme = "README.rst"
 
 repository = "https://github.com/spapanik/dj_settings"
 
-keywords = ["settings"]
+keywords = ["settings", "configuration"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
 ]
 
