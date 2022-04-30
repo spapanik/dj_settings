@@ -32,16 +32,12 @@ class FileReader:
             return force_type
 
         suffix = self.path.suffix
-        if suffix == ".json":
-            return "json"
-        if suffix in (".conf", ".cfg", ".ini"):
+        if suffix in {".conf", ".cfg"}:
             return "ini"
-        if suffix == ".toml":
-            return "toml"
-        if suffix in (".yaml", ".yml"):
+        if suffix == ".yaml":
             return "yaml"
 
-        return None
+        return suffix[1:]
 
     @property
     def data(self) -> Dict[str, Any]:
