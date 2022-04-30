@@ -1,1 +1,1 @@
-from dj_settings.utils import FileReader, setting
+from dj_settings.utils import SettingsParser, setting

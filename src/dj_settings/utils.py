@@ -18,7 +18,7 @@ class SectionError(KeyError):
     pass
 
 
-class FileReader:
+class SettingsParser:
     __slots__ = ["path", "type"]
 
     def __init__(self, path: Union[str, Path], force_type: str = None):
@@ -72,7 +72,7 @@ def get_paths(filename: Path, *, base_dir: Path = None) -> Iterator[Path]:
 
 
 def extract_value(name: str, path: Path, sections: Iterable) -> Any:
-    data = FileReader(path).data
+    data = SettingsParser(path).data
     for section in chain(sections, [name]):
         try:
             data = data[section]
