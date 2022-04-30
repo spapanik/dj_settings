@@ -13,6 +13,10 @@ Added
 ^^^^^
 * Expose FileReader and setting via the `__init__` module
 
+Fixed
+^^^^^
+* /etc has the lowest priority and the current working directory has the highest
+
 `2.1.0`_ - 2022-04-28
 ---------------------
 

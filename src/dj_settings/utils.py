@@ -67,9 +67,10 @@ class FileReader:
 
 
 def get_paths(filename: Path, *, base_dir: Path = None) -> Iterator[Path]:
-    paths = [ETC.joinpath(filename), HOME_CONF.joinpath(filename)]
+    paths = []
     if base_dir is not None:
         paths.append(base_dir.joinpath(filename))
+    paths.extend([HOME_CONF.joinpath(filename), ETC.joinpath(filename)])
 
     return filter(lambda path: os.access(path, os.R_OK), paths)
 
