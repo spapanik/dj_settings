@@ -46,10 +46,12 @@ class SettingsParser:
                 return cast(Dict[str, Any], json.load(file))
 
         if self.type == "ini":
-            parser = RawConfigParser()
+            parser = RawConfigParser(default_section=None)
             parser.optionxform = lambda option: option  # type: ignore
             parser.read(self.path)
-            return {key: dict(value) for key, value in parser.items()}
+            return {
+                key: dict(value) for key, value in parser.items() if key is not None
+            }
 
         if self.type == "toml":
             with open(self.path, "rb") as binary_file:

@@ -20,6 +20,7 @@ Fixed
 Changed
 ^^^^^^^
 * Rename FileReader to SettingsParser
+* Removed the default section from the ini settings parser
 
 `2.1.0`_ - 2022-04-28
 ---------------------
