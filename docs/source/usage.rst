@@ -40,7 +40,23 @@ Under the hood
 
 .. py:module:: utils
 
-Currently there is only the utils module, containing a single method, setting:
+Currently there is only the utils module, containing a single class
+to parse settings and a single method to get the value of a setting.
+
+.. py:class:: SettingsParser
+
+    The SettingsParser
+
+    .. py:method:: __init__(path: Union[str, Path], force_type: str = None)
+
+       Initialise the SettingsParser to parse the file located at `path`.
+       `force_type` can be used to force the file type to a different one, or left as None
+       to use the file extension
+
+    .. py:method:: data(self) -> Dict[str, Any]
+
+       Get the settings from the parsed file as a python dictionary
+
 
 .. py:function:: setting( \
         name, \
