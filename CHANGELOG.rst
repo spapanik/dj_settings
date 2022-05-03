@@ -9,6 +9,9 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+`3.0.1`_ - 2022-05-03
+---------------------
+
 Fixed
 ^^^^^
 * A typo that messed using .yml files as settings
@@ -99,7 +102,8 @@ Added
 * Allow including python files for settings
 
 
-.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v3.0.0...main
+.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v3.0.1...main
+.. _`3.0.1`: https://github.com/spapanik/dj_settings/compare/v3.0.0...v3.0.1
 .. _`3.0.0`: https://github.com/spapanik/dj_settings/compare/v2.1.0...v3.0.0
 .. _`2.1.0`: https://github.com/spapanik/dj_settings/compare/v2.0.0...v2.1.0
 .. _`2.0.0`: https://github.com/spapanik/dj_settings/compare/v1.0.0...v2.0.0
