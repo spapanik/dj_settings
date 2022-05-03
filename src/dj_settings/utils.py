@@ -34,7 +34,7 @@ class SettingsParser:
         suffix = self.path.suffix
         if suffix in {".conf", ".cfg"}:
             return "ini"
-        if suffix == ".yaml":
+        if suffix == ".yml":
             return "yaml"
 
         return suffix[1:]

@@ -9,6 +9,10 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+Fixed
+^^^^^
+* A typo that messed using .yml files as settings
+
 `3.0.0`_ - 2022-05-01
 ---------------------
 
