@@ -47,7 +47,7 @@ class SettingsParser:
 
         if self.type == "ini":
             parser = RawConfigParser(default_section=None)
-            parser.optionxform = lambda option: option  # type: ignore
+            parser.optionxform = lambda option: option  # type: ignore[assignment]
             parser.read(self.path)
             return {
                 key: dict(value) for key, value in parser.items() if key is not None
@@ -73,7 +73,7 @@ def get_paths(filename: Path, *, base_dir: Path = None) -> Iterator[Path]:
     return filter(lambda path: os.access(path, os.R_OK), paths)
 
 
-def extract_value(name: str, path: Path, sections: Iterable) -> Any:
+def extract_value(name: str, path: Path, sections: Iterable[Any]) -> Any:
     data = SettingsParser(path).data
     for section in chain(sections, [name]):
         try:
@@ -90,7 +90,7 @@ def setting(
     allow_env: bool = True,
     base_dir: Union[str, Path] = None,
     filename: Union[str, Path] = None,
-    sections: Iterable = (),
+    sections: Iterable[Any] = (),
     rtype: type = str,
     default: Any = None,
 ) -> Any:
