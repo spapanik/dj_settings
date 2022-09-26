@@ -31,7 +31,7 @@ testpaths = "tests"
 
 [tool.poetry]
 name = "dj_settings"
-version = "3.0.1"
+version = "4.0.0"
 description = "project settings the UNIX way"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",
