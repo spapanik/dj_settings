@@ -21,6 +21,13 @@ class TestSettingsParser:
             "database": {"username": "aria.stark", "password": "valar morghulis"}
         }
 
+    @staticmethod
+    @pytest.mark.parametrize(["suffix"], [[".ini"], [".json"], [".toml"], [".yaml"]])
+    def test_data_order(suffix):
+        file = Path(__file__).parents[1].joinpath("data/settings").with_suffix(suffix)
+        database = utils.SettingsParser(file).data["database"]
+        assert list(database) == ["username", "password"]
+
 
 @pytest.mark.parametrize(
     ["base", "override", "expected"],
