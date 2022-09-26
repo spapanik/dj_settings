@@ -64,6 +64,16 @@ class SettingsParser:
         return None
 
 
+def deep_merge(dict_1: Dict[str, Any], dict_2: Dict[str, Any]):
+    output = dict_1.copy()
+    for key, value in dict_2.items():
+        if isinstance(dict_1.get(key), dict) and isinstance(value, dict):
+            output[key] = deep_merge(dict_1[key], value)
+        else:
+            output[key] = value
+    return output
+
+
 def get_paths(filename: Path, *, base_dir: Path = None) -> Iterator[Path]:
     paths = []
     if base_dir is not None:
