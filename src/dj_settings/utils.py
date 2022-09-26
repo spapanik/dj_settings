@@ -39,8 +39,7 @@ class SettingsParser:
 
         return suffix[1:]
 
-    @property
-    def data(self) -> Dict[str, Any]:
+    def _data(self) -> Dict[str, Any]:
         if self.type == "json":
             with open(self.path) as file:
                 return cast(Dict[str, Any], json.load(file))
@@ -62,6 +61,15 @@ class SettingsParser:
                 return cast(Dict[str, Any], yaml.safe_load(file))
 
         return None
+
+    @property
+    def data(self) -> Dict[str, Any]:
+        output = self._data()
+        suffix = self.path.suffix
+        override_dir = self.path.with_suffix(f"{suffix}.d")
+        for path in sorted(override_dir.glob(f"*{suffix}")):
+            output = deep_merge(output, type(self)(path).data)
+        return output
 
 
 def deep_merge(dict_1: Dict[str, Any], dict_2: Dict[str, Any]):

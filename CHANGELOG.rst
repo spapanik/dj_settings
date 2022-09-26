@@ -12,6 +12,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 ^^^^^
 * Always return the settings in the order that they appear on the file
+* Allow overriding the settings with a .d directory
 
 `3.0.1`_ - 2022-05-03
 ---------------------

@@ -46,7 +46,7 @@ Usage
 
 ``dj_settings`` will read from various config files to get the value of a variable,
 in a way that's very familiar to all UNIX users. It allows setting default values,
-and overriding with ENV VARs.
+and overriding with ENV VARs and .d directories.
 
 Links
 -----

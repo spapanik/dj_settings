@@ -28,6 +28,17 @@ class TestSettingsParser:
         database = utils.SettingsParser(file).data["database"]
         assert list(database) == ["username", "password"]
 
+    @staticmethod
+    def test_overriding():
+        file = Path(__file__).parents[1].joinpath("data/override.toml")
+        assert utils.SettingsParser(file).data == {
+            "foo": {
+                "x": 100,
+                "y": 20,
+                "z": 3,
+            }
+        }
+
 
 @pytest.mark.parametrize(
     ["base", "override", "expected"],

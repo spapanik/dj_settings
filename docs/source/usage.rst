@@ -10,6 +10,8 @@ Usage
 #. Environment variable named ``VAR``
 
 If the variable is defined in multiple locations it will choose the last one.
+Also, adding a ``project.conf.d/`` directory, will override the settings in the
+respective project.conf file.
 
 The recommended way to use it in a django project is to add the following lines
 near the top of the settings file:
