@@ -9,6 +9,10 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+Changed
+^^^^^^^
+* Use the standard library TOML parser when it's present
+
 `4.0.0`_ - 2022-09-26
 ---------------------
 

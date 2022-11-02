@@ -1,0 +1,3 @@
+from typing import Any, BinaryIO, Dict
+
+def toml_parser(file: BinaryIO) -> Dict[str, Any]: ...

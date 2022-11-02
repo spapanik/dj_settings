@@ -5,8 +5,9 @@ from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, Union, cast
 
-import tomli
 import yaml
+
+from dj_settings._seven import toml_parser
 
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
@@ -54,7 +55,7 @@ class SettingsParser:
 
         if self.type == "toml":
             with open(self.path, "rb") as binary_file:
-                return tomli.load(binary_file)
+                return toml_parser(binary_file)
 
         if self.type == "yaml":
             with open(self.path) as file:
