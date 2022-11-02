@@ -9,6 +9,9 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+`4.1.0`_ - 2022-11-02
+---------------------
+
 Changed
 ^^^^^^^
 * Use the standard library TOML parser when it's present
@@ -114,7 +117,8 @@ Added
 * Allow including python files for settings
 
 
-.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v4.0.0...main
+.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v4.1.0...main
+.. _`4.1.0`: https://github.com/spapanik/dj_settings/compare/v4.0.0...v4.1.0
 .. _`4.0.0`: https://github.com/spapanik/dj_settings/compare/v3.0.1...v4.0.0
 .. _`3.0.1`: https://github.com/spapanik/dj_settings/compare/v3.0.0...v3.0.1
 .. _`3.0.0`: https://github.com/spapanik/dj_settings/compare/v2.1.0...v3.0.0
