@@ -76,9 +76,9 @@ PyYAML = "^6.0"
 tomli = {version = "^2.0.0", python = ">=3.7.0,<3.11.0"}
 
 [tool.poetry.group.dev.dependencies]
-pdbpp = "^0.10.0"
+ipdb = {version = "^0.13.0", python = "^3.10.0"}
+ipython = {version = "^8.6.0", python = "^3.10.0"}
 pipdeptree = "^2.3.0"
-ptpython = "^3.0.0"
 
 [tool.poetry.group.lint.dependencies]
 black = "^22.10.0"
@@ -99,8 +99,5 @@ types-PyYAML = "^6.0.0"
 pytest = "^7.1.0"
 
 [tool.poetry.group.docs.dependencies]
-sphinx = [
-    {version = "^4.3.0", python = ">=3.7.0,<3.10.0"},
-    {version = "^5.2.0", python = "^3.10.0"},
-]
-sphinx-rtd-theme = "^1.0.0"
+sphinx = {version = "^5.2.0", python = "^3.10.0"}
+sphinx-rtd-theme = {version = "^1.0.0", python = "^3.10.0"}
