@@ -12,7 +12,7 @@ from dj_settings._seven import toml_parser
 PathConf = Union[str, Path, Dict[str, Any]]
 ETC = Path("/etc/")
 HOME_CONF = Path.home().joinpath(".config/")
-SUPPORTED_TYPES = {"json", "ini", "toml", "yaml"}
+SUPPORTED_TYPES = {"json", "ini", "toml", "yaml", "env"}
 
 
 class SectionError(KeyError):
@@ -33,14 +33,30 @@ class SettingsParser:
             return force_type
 
         suffix = self.path.suffix
-        if suffix in {".conf", ".cfg"}:
+        if suffix in {".conf", ".cfg", ".ini"}:
             return "ini"
-        if suffix == ".yml":
+        if suffix in {".yml", ".yaml"}:
             return "yaml"
-
-        return suffix[1:]
+        if suffix == ".toml":
+            return "toml"
+        if suffix == ".json":
+            return "json"
+        if self.path.name.startswith(".env"):
+            return "env"
+        raise ValueError(f"Cannot infer type of {self.path}")
 
     def _data(self) -> Dict[str, Any]:
+        if self.type == "env":
+            data = {}
+            with open(self.path) as file:
+                for line in file:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    key, value = line.split("=")
+                    data[key] = value
+            return data
+
         if self.type == "json":
             with open(self.path) as file:
                 return cast(Dict[str, Any], json.load(file))
@@ -68,7 +84,9 @@ class SettingsParser:
         output = self._data()
         suffix = self.path.suffix
         override_dir = self.path.with_suffix(f"{suffix}.d")
-        for path in sorted(override_dir.glob(f"*{suffix}")):
+        for path in sorted(override_dir.glob("*")):
+            if self.type != "env" and path.suffix != suffix:
+                continue
             output = deep_merge(output, type(self)(path).data)
         return output
 
