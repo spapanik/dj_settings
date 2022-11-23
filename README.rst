@@ -39,7 +39,7 @@ The easiest way is to use `poetry`_ to manage your dependencies and add *dj_sett
 .. code-block:: toml
 
     [tool.poetry.dependencies]
-    dj_settings = "^4.1.0"
+    dj_settings = "^4.2.0"
 
 Usage
 ^^^^^
