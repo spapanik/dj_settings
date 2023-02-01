@@ -5,9 +5,6 @@ dj_settings: project settings the UNIX way
 .. image:: https://github.com/spapanik/dj_settings/actions/workflows/build.yml/badge.svg
   :alt: Build
   :target: https://github.com/spapanik/dj_settings/actions/workflows/build.yml
-.. image:: https://img.shields.io/lgtm/alerts/g/spapanik/dj_settings.svg
-  :alt: Total alerts
-  :target: https://lgtm.com/projects/g/spapanik/dj_settings/alerts/
 .. image:: https://img.shields.io/github/license/spapanik/dj_settings
   :alt: License
   :target: https://github.com/spapanik/dj_settings/blob/main/LICENSE.txt

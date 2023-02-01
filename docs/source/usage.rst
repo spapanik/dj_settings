@@ -49,13 +49,13 @@ to parse settings and a single method to get the value of a setting.
 
     The SettingsParser
 
-    .. py:method:: __init__(path: Union[str, Path], force_type: str = None)
+    .. py:method:: __init__(path: str | Path, force_type: str = None)
 
        Initialise the SettingsParser to parse the file located at `path`.
        `force_type` can be used to force the file type to a different one, or left as None
        to use the file extension
 
-    .. py:method:: data(self) -> Dict[str, Any]
+    .. py:method:: data(self) -> dict[str, Any]
 
        Get the settings from the parsed file as a python dictionary
 
