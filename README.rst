@@ -2,9 +2,9 @@
 dj_settings: project settings the UNIX way
 ==========================================
 
-.. image:: https://github.com/spapanik/dj_settings/actions/workflows/build.yml/badge.svg
-  :alt: Build
-  :target: https://github.com/spapanik/dj_settings/actions/workflows/build.yml
+.. image:: https://github.com/spapanik/dj_settings/actions/workflows/test.yml/badge.svg
+  :alt: Test
+  :target: https://github.com/spapanik/dj_settings/actions/workflows/test.yml
 .. image:: https://img.shields.io/github/license/spapanik/dj_settings
   :alt: License
   :target: https://github.com/spapanik/dj_settings/blob/main/LICENSE.txt
