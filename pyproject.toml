@@ -50,7 +50,7 @@ source = ["src/"]
 
 [tool.poetry]
 name = "dj_settings"
-version = "4.2.0"
+version = "4.2.1"
 description = "project settings the UNIX way"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",

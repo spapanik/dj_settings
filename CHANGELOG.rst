@@ -9,6 +9,12 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+`4.2.1`_ - 2023-02-28
+---------------------
+Fixed
+^^^^^
+* Fixed some type hints
+
 `4.2.0`_ - 2022-11-23
 ---------------------
 Added
@@ -123,7 +129,8 @@ Added
 * Allow including python files for settings
 
 
-.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v4.2.0...main
+.. _`unreleased`: https://github.com/spapanik/dj_settings/compare/v4.2.1...main
+.. _`4.2.1`: https://github.com/spapanik/dj_settings/compare/v4.2.0...v4.2.1
 .. _`4.2.0`: https://github.com/spapanik/dj_settings/compare/v4.1.0...v4.2.0
 .. _`4.1.0`: https://github.com/spapanik/dj_settings/compare/v4.0.0...v4.1.0
 .. _`4.0.0`: https://github.com/spapanik/dj_settings/compare/v3.0.1...v4.0.0
