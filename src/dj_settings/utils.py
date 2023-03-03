@@ -51,9 +51,9 @@ class SettingsParser:
     def _data(self) -> ConfDict:
         if self.type == "env":
             data = {}
-            with open(self.path) as file:
-                for line in file:
-                    line = line.strip()
+            with self.path.open() as file:
+                for raw_line in file:
+                    line = raw_line.strip()
                     if not line or line.startswith("#"):
                         continue
                     key, value = line.split("=")
@@ -61,7 +61,7 @@ class SettingsParser:
             return data
 
         if self.type == "json":
-            with open(self.path) as file:
+            with self.path.open() as file:
                 return cast(ConfDict, json.load(file))
 
         if self.type == "ini":
@@ -73,11 +73,11 @@ class SettingsParser:
             }
 
         if self.type == "toml":
-            with open(self.path, "rb") as binary_file:
+            with self.path.open("rb") as binary_file:
                 return toml_parser(binary_file)
 
         if self.type == "yaml":
-            with open(self.path) as file:
+            with self.path.open() as file:
                 return cast(ConfDict, yaml.safe_load(file))
 
         raise RuntimeError("This is unreachable.")
