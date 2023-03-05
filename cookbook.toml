@@ -23,7 +23,7 @@ requires = [
 ]
 commands = [
     "${runner} black .",
-    "${runner} ruff --fix .",
+    "${runner} ruff --fix-only .",
 ]
 
 [lint]
