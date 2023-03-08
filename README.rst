@@ -2,9 +2,9 @@
 dj_settings: project settings the UNIX way
 ==========================================
 
-.. image:: https://github.com/spapanik/dj_settings/actions/workflows/test.yml/badge.svg
-  :alt: Test
-  :target: https://github.com/spapanik/dj_settings/actions/workflows/test.yml
+.. image:: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml/badge.svg
+  :alt: Tests
+  :target: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml
 .. image:: https://img.shields.io/github/license/spapanik/dj_settings
   :alt: License
   :target: https://github.com/spapanik/dj_settings/blob/main/LICENSE.txt
@@ -15,8 +15,14 @@ dj_settings: project settings the UNIX way
   :alt: Downloads
   :target: https://pepy.tech/project/dj_settings
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-  :alt: Code style
+  :alt: code style: black
   :target: https://github.com/psf/black
+.. image:: https://img.shields.io/badge/build%20automation-yamk-success
+  :alt: build automation: yam
+  :target: https://github.com/spapanik/yamk
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
+  :alt: Lint: ruff
+  :target: https://github.com/charliermarsh/ruff
 
 ``dj_settings`` offers way to add project settings in a way
 that has been battle-tested for years in numerous UNIX apps,
