@@ -89,7 +89,9 @@ authors = [
 license = "LGPL-3.0+"
 readme = "README.rst"
 
+homepage = "https://dj-settings.readthedocs.io/en/stable/"
 repository = "https://github.com/spapanik/dj_settings"
+documentation = "https://dj-settings.readthedocs.io/en/stable/"
 
 keywords = ["settings", "configuration"]
 classifiers = [
