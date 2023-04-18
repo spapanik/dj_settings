@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -7,7 +9,7 @@ from dj_settings import utils
 
 
 @pytest.mark.parametrize(("allow_env", "expected"), [(True, "env"), (False, "default")])
-def test_setting(allow_env, expected):
+def test_setting(allow_env: bool, expected: str) -> None:
     os.environ["VAR"] = "env"
     assert utils.setting("VAR", allow_env=allow_env, default="default") == expected
 
@@ -15,7 +17,7 @@ def test_setting(allow_env, expected):
 class TestSettingsParser:
     @staticmethod
     @pytest.mark.parametrize("suffix", [".ini", ".json", ".toml", ".yaml"])
-    def test_data(suffix):
+    def test_data(suffix: str) -> None:
         file = Path(__file__).parents[1].joinpath("data/settings").with_suffix(suffix)
         assert utils.SettingsParser(file).data == {
             "database": {"username": "aria.stark", "password": "valar morghulis"}
@@ -23,13 +25,13 @@ class TestSettingsParser:
 
     @staticmethod
     @pytest.mark.parametrize("suffix", [".ini", ".json", ".toml", ".yaml"])
-    def test_data_order(suffix):
+    def test_data_order(suffix: str) -> None:
         file = Path(__file__).parents[1].joinpath("data/settings").with_suffix(suffix)
         database = utils.SettingsParser(file).data["database"]
         assert list(database) == ["username", "password"]
 
     @staticmethod
-    def test_overriding():
+    def test_overriding() -> None:
         file = Path(__file__).parents[1].joinpath("data/override.toml")
         assert utils.SettingsParser(file).data == {
             "foo": {
@@ -51,5 +53,9 @@ class TestSettingsParser:
         ),
     ],
 )
-def test_deep_merge(base, override, expected):
+def test_deep_merge(
+    base: dict[str, list[int]],
+    override: dict[str, list[int]],
+    expected: dict[str, list[int]],
+) -> None:
     assert utils.deep_merge(base, override) == expected
