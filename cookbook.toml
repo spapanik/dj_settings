@@ -1,6 +1,6 @@
 ["$globals"]
 shell = "bash"
-version = 5
+version = "5.2"
 
 ["$globals".vars]
 poetry_sync = "--sync"
@@ -43,7 +43,7 @@ requires = [
     "install",
 ]
 commands = [
-    "pytest ${pytest_args} ${pytest_path}",
+    "pytest ${pytest_args} ${pytest_path} ${.extra}",
 ]
 
 ["docs/source"]
