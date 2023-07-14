@@ -1,5 +1,5 @@
 # noqa: INP001
-from __future__ import annotations  # py39
+from __future__ import annotations
 
 project = "dj_settings"
 project_copyright = "2021, Stephanos Kuma"
@@ -9,5 +9,5 @@ extensions: list[str] = []
 templates_path = ["_templates"]
 exclude_patterns: list[str] = []
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_static_path = ["_static"]
