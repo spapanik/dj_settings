@@ -1,5 +1,5 @@
 # noqa: INP001
-from __future__ import annotations
+from __future__ import annotations  # py39
 
 project = "dj_settings"
 project_copyright = "2021, Stephanos Kuma"
