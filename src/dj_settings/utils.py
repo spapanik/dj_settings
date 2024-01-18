@@ -29,7 +29,8 @@ class SettingsParser:
         self.path = Path(path)
         self.type = self.get_type(force_type)
         if self.type not in SUPPORTED_TYPES:
-            raise ValueError(f"{self.type} is not a supported extension (yet)")
+            msg = f"{self.type} is not a supported extension (yet)"
+            raise ValueError(msg)
 
     def get_type(self, force_type: str = "") -> str:
         if force_type:
@@ -46,7 +47,8 @@ class SettingsParser:
             return "json"
         if self.path.name.startswith(".env"):
             return "env"
-        raise ValueError(f"Cannot infer type of {self.path}")
+        msg = f"Cannot infer type of {self.path}"
+        raise ValueError(msg)
 
     def _data(self) -> ConfDict:
         if self.type == "env":
@@ -80,7 +82,8 @@ class SettingsParser:
             with self.path.open() as file:
                 return cast(ConfDict, yaml.safe_load(file))
 
-        raise RuntimeError("This is unreachable.")
+        msg = "This is unreachable."
+        raise RuntimeError(msg)
 
     @property
     def data(self) -> ConfDict:
@@ -118,8 +121,9 @@ def extract_value(name: str, path: Path, sections: Iterable[Any]) -> Any:
     for section in chain(sections, [name]):
         try:
             data = data[section]
-        except (KeyError, AttributeError) as exc:
-            raise SectionError("Missing section") from exc
+        except (KeyError, AttributeError) as exc:  # noqa: PERF203
+            msg = "Missing section"
+            raise SectionError(msg) from exc
 
     return data
 
@@ -144,7 +148,7 @@ def setting(
         for path in paths:
             try:
                 value = extract_value(name, path, sections)
-            except SectionError:
+            except SectionError:  # noqa: PERF203
                 pass
             else:
                 return rtype(value)

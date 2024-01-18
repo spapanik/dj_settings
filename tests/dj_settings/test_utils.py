@@ -33,13 +33,7 @@ class TestSettingsParser:
     @staticmethod
     def test_overriding() -> None:
         file = Path(__file__).parents[1].joinpath("data/override.toml")
-        assert utils.SettingsParser(file).data == {
-            "foo": {
-                "x": 100,
-                "y": 20,
-                "z": 3,
-            }
-        }
+        assert utils.SettingsParser(file).data == {"foo": {"x": 100, "y": 20, "z": 3}}
 
 
 @pytest.mark.parametrize(
