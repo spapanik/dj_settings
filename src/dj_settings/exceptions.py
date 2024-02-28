@@ -1,0 +1,2 @@
+class SectionError(KeyError):
+    pass

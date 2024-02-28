@@ -5,21 +5,14 @@ import os
 from configparser import RawConfigParser
 from itertools import chain
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, Union, cast
+from typing import Any, Iterable, Iterator, cast
 
 import yaml
 
 from dj_settings._seven import toml_parser
-
-ConfDict = Dict[str, Any]
-PathConf = Union[str, Path, ConfDict]
-ETC = Path("/etc/")
-HOME_CONF = Path.home().joinpath(".config/")
-SUPPORTED_TYPES = {"json", "ini", "toml", "yaml", "env"}
-
-
-class SectionError(KeyError):
-    pass
+from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
+from dj_settings.exceptions import SectionError
+from dj_settings.types import ConfDict
 
 
 class SettingsParser:
