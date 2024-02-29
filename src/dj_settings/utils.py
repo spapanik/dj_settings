@@ -12,21 +12,21 @@ import yaml
 from dj_settings._seven import toml_parser
 from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
 from dj_settings.exceptions import SectionError
-from dj_settings.types import ConfDict
+from dj_settings.types import ConfDict, SupportedType
 
 
 class SettingsParser:
     __slots__ = ["path", "type"]
 
-    def __init__(self, path: str | Path, force_type: str = ""):
+    def __init__(self, path: str | Path, force_type: SupportedType | None = None):
         self.path = Path(path)
         self.type = self.get_type(force_type)
-        if self.type not in SUPPORTED_TYPES:
-            msg = f"{self.type} is not a supported extension (yet)"
-            raise ValueError(msg)
 
-    def get_type(self, force_type: str = "") -> str:
+    def get_type(self, force_type: SupportedType | None = None) -> SupportedType:
         if force_type:
+            if force_type not in SUPPORTED_TYPES:
+                msg = f"{self.type} is not a supported extension (yet)"
+                raise ValueError(msg)
             return force_type
 
         suffix = self.path.suffix
@@ -71,12 +71,8 @@ class SettingsParser:
             with self.path.open("rb") as binary_file:
                 return toml_parser(binary_file)
 
-        if self.type == "yaml":
-            with self.path.open() as file:
-                return cast(ConfDict, yaml.safe_load(file))
-
-        msg = "This is unreachable."
-        raise RuntimeError(msg)
+        with self.path.open() as file:
+            return cast(ConfDict, yaml.safe_load(file))
 
     @property
     def data(self) -> ConfDict:
