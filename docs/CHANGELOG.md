@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+- Moved SettingsParser and setting to a new module
+
 ### Removed
 
 - Dropped python 3.7 support

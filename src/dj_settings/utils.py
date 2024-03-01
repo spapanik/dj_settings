@@ -3,54 +3,24 @@ from __future__ import annotations
 import json
 import os
 from configparser import RawConfigParser
-from itertools import chain
 from pathlib import Path
-from typing import Any, Iterable, Iterator, cast
+from typing import Iterator, cast
 
 import yaml
 
 from dj_settings._seven import toml_parser
 from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
-from dj_settings.exceptions import SectionError
 from dj_settings.types import ConfDict, SupportedType
 
 
-class SettingsParser:
-    __slots__ = ["path", "type", "_data"]
-
-    def __init__(self, path: str | Path, force_type: SupportedType | None = None):
-        self.path = Path(path)
-        self.type = get_type(self.path, force_type)
-        self._data: ConfDict | None = None
-
-    @property
-    def data(self) -> ConfDict:
-        if self._data is None:
-            self._data = {}
-            for path in get_override_paths(self.path, self.type):
-                self._data = deep_merge(self._data, extract_data(path, self.type))
-        return self._data
-
-    def extract_value(self, name: str, sections: Iterable[Any]) -> Any:
-        data = self.data
-        for section in chain(sections, [name]):
-            try:
-                data = data[section]
-            except (KeyError, AttributeError) as exc:  # noqa: PERF203
-                msg = "Missing section"
-                raise SectionError(msg) from exc
-
-        return data
-
-
-def get_override_paths(path: Path, s_type: SupportedType) -> Iterator[Path]:
+def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
     if path.is_file() and os.access(path, os.R_OK):
         yield path
 
     suffix = path.suffix
     override_dir = path.with_suffix(f"{suffix}.d")
     if override_dir.is_dir():
-        glob = ".env*" if s_type == "env" else f"*{suffix}"
+        glob = f"*{suffix}" if same_suffix else f"{path.stem}*"
         for path in sorted(override_dir.glob(glob)):
             if path.is_file() and os.access(path, os.R_OK):
                 yield path
@@ -129,31 +99,3 @@ def extract_data(path: Path, settings_type: SupportedType) -> ConfDict:
 
     with path.open() as file:
         return cast(ConfDict, yaml.safe_load(file))
-
-
-def setting(
-    name: str,
-    *,
-    allow_env: bool = True,
-    base_dir: str | Path | None = None,
-    filename: str | Path | None = None,
-    sections: Iterable[Any] = (),
-    rtype: type = str,
-    default: Any = None,
-) -> Any:
-    if allow_env and os.getenv(name) is not None:
-        return rtype(os.environ[name])
-
-    if filename is not None:
-        if base_dir is not None:
-            base_dir = Path(base_dir)
-        for path in get_config_paths(Path(filename), base_dir=base_dir):
-            parser = SettingsParser(path)
-            try:
-                value = parser.extract_value(name, sections)
-            except SectionError:
-                pass
-            else:
-                return rtype(value)
-
-    return default
