@@ -2,10 +2,28 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from dj_settings import settings
+
+
+@pytest.fixture()
+def config(data_dir: Path) -> Any:
+    os.environ["USER"] = "Monsieur Madeleine"
+    os.environ["AGE"] = "55"
+
+    @settings.settings_class(base_dir=data_dir, filename="config.yml")
+    class Settings:
+        user: str = settings.settings_field("USER", allow_env=False, sections=["info"])
+        email: str = settings.settings_field("email", sections=["info"])
+        password: str = settings.settings_field(
+            "PASSWORD", sections=["info"], default="super-secret-1234"
+        )
+        age: int = settings.settings_field("AGE", sections=["info"], rtype=int)
+
+    return Settings()
 
 
 @pytest.mark.parametrize(
@@ -38,6 +56,13 @@ def test_setting(
 def test_setting_without_file(allow_env: bool, expected: str) -> None:
     os.environ["VAR"] = "env"
     assert settings.setting("VAR", allow_env=allow_env, default="default") == expected
+
+
+def test_settings_class(config: Any) -> None:
+    assert config.user == "Jean Valjean"
+    assert config.email == "madeleine@montreuil.gov"
+    assert config.password == "super-secret-1234"  # noqa: S105
+    assert config.age == 55
 
 
 class TestSettingsParser:

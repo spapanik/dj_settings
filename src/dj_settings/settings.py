@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import inspect
 import os
+from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from dj_settings.exceptions import SectionError
 from dj_settings.types import ConfDict, SupportedType
@@ -71,3 +73,67 @@ def setting(
                 return rtype(value)
 
     return default
+
+
+class SettingsField:
+    __slots__ = ["name", "allow_env", "sections", "rtype", "default"]
+
+    def __init__(
+        self,
+        name: str,
+        *,
+        allow_env: bool,
+        sections: Iterable[Any],
+        rtype: type,
+        default: Any,
+    ):
+        self.name = name
+        self.allow_env = allow_env
+        self.sections = sections
+        self.rtype = rtype
+        self.default = default
+
+    def __call__(self, base_dir: Path | str | None, filename: Path | str | None) -> Any:
+        return setting(
+            self.name,
+            allow_env=self.allow_env,
+            base_dir=base_dir,
+            filename=filename,
+            sections=self.sections,
+            rtype=self.rtype,
+            default=self.default,
+        )
+
+
+def settings_field(
+    name: str,
+    *,
+    allow_env: bool = True,
+    sections: Iterable[Any] = (),
+    rtype: type = str,
+    default: Any = None,
+) -> Any:
+
+    return SettingsField(
+        name, allow_env=allow_env, sections=sections, rtype=rtype, default=default
+    )
+
+
+def _preprocess_class(
+    cls: type, base_dir: Path | str | None, filename: Path | str | None
+) -> type:
+    for attribute in inspect.get_annotations(cls):
+        value = getattr(cls, attribute, None)
+        if isinstance(value, SettingsField):
+            setattr(cls, attribute, field(default=value(base_dir, filename)))
+    return cls
+
+
+def settings_class(
+    base_dir: Path | str | None = None, filename: Path | str | None = None
+) -> Callable[[type], type]:
+    def wrap(cls: type) -> type:
+        cls = _preprocess_class(cls, base_dir, filename)
+        return dataclass(frozen=True)(cls)
+
+    return wrap

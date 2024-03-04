@@ -1,3 +1,3 @@
-from dj_settings.settings import SettingsParser, setting
+from dj_settings.settings import SettingsParser, setting, settings_class, settings_field
 
-__all__ = ["SettingsParser", "setting"]
+__all__ = ["SettingsParser", "setting", "settings_class", "settings_field"]

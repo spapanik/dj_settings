@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+- Added a @settings_class decorator to create settings classes
+
 ### Changed
 
 - Moved SettingsParser and setting to a new module
