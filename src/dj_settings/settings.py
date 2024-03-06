@@ -75,7 +75,7 @@ def get_setting(
     return default
 
 
-class SettingsField:
+class _SettingsField:
     __slots__ = ["name", "allow_env", "sections", "rtype", "default"]
 
     def __init__(
@@ -114,7 +114,7 @@ def settings_field(
     default: Any = None,
 ) -> Any:
 
-    return SettingsField(
+    return _SettingsField(
         name, allow_env=allow_env, sections=sections, rtype=rtype, default=default
     )
 
@@ -124,7 +124,7 @@ def _preprocess_class(
 ) -> type:
     for attribute in inspect.get_annotations(cls):
         value = getattr(cls, attribute, None)
-        if isinstance(value, SettingsField):
+        if isinstance(value, _SettingsField):
             setattr(cls, attribute, field(default=value(base_dir, filename)))
     return cls
 
