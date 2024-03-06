@@ -47,7 +47,7 @@ class SettingsParser:
         return data
 
 
-def setting(
+def get_setting(
     name: str,
     *,
     allow_env: bool = True,
@@ -94,7 +94,7 @@ class SettingsField:
         self.default = default
 
     def __call__(self, base_dir: Path | str | None, filename: Path | str | None) -> Any:
-        return setting(
+        return get_setting(
             self.name,
             allow_env=self.allow_env,
             base_dir=base_dir,

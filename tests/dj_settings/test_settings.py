@@ -40,7 +40,7 @@ def test_setting(
 ) -> None:
     os.environ["USER"] = "Monsieur Madeleine"
     assert (
-        settings.setting(
+        settings.get_setting(
             attribute,
             allow_env=allow_env,
             base_dir=data_dir,
@@ -55,7 +55,9 @@ def test_setting(
 @pytest.mark.parametrize(("allow_env", "expected"), [(True, "env"), (False, "default")])
 def test_setting_without_file(allow_env: bool, expected: str) -> None:
     os.environ["VAR"] = "env"
-    assert settings.setting("VAR", allow_env=allow_env, default="default") == expected
+    assert (
+        settings.get_setting("VAR", allow_env=allow_env, default="default") == expected
+    )
 
 
 def test_settings_class(config: Any) -> None:
