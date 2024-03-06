@@ -19,20 +19,22 @@ from dj_settings.utils import (
 
 
 class SettingsParser:
-    __slots__ = ["path", "type", "_data"]
+    __slots__ = ["paths", "_data"]
 
-    def __init__(self, path: str | Path, force_type: SupportedType | None = None):
-        self.path = Path(path)
-        self.type = get_type(self.path, force_type)
+    def __init__(
+        self, paths: Iterable[str | Path], force_type: SupportedType | None = None
+    ):
+        self.paths = {Path(path): get_type(Path(path), force_type) for path in paths}
         self._data: ConfDict | None = None
 
     @property
     def data(self) -> ConfDict:
         if self._data is None:
             self._data = {}
-            same_suffix = self.type != "env"
-            for path in get_override_paths(self.path, same_suffix=same_suffix):
-                self._data = deep_merge(self._data, extract_data(path, self.type))
+            for base_path, base_type in self.paths.items():
+                same_suffix = base_type != "env"
+                for path in get_override_paths(base_path, same_suffix=same_suffix):
+                    self._data = deep_merge(self._data, extract_data(path, base_type))
         return self._data
 
     def extract_value(self, name: str, sections: Iterable[Any]) -> Any:
@@ -63,14 +65,13 @@ def get_setting(
     if filename is not None:
         if base_dir is not None:
             base_dir = Path(base_dir)
-        for path in get_config_paths(Path(filename), base_dir=base_dir):
-            parser = SettingsParser(path)
-            try:
-                value = parser.extract_value(name, sections)
-            except SectionError:
-                pass
-            else:
-                return rtype(value)
+        parser = SettingsParser(get_config_paths(Path(filename), base_dir=base_dir))
+        try:
+            value = parser.extract_value(name, sections)
+        except SectionError:
+            pass
+        else:
+            return rtype(value)
 
     return default
 

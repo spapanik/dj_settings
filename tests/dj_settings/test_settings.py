@@ -72,7 +72,7 @@ class TestSettingsParser:
     @pytest.mark.parametrize("suffix", [".ini", ".json", ".toml", ".yaml"])
     def test_data(data_dir: Path, suffix: str) -> None:
         file = data_dir.joinpath("settings").with_suffix(suffix)
-        assert settings.SettingsParser(file).data == {
+        assert settings.SettingsParser([file]).data == {
             "database": {"username": "aria.stark", "password": "valar morghulis"}
         }
 
@@ -80,12 +80,12 @@ class TestSettingsParser:
     @pytest.mark.parametrize("suffix", [".ini", ".json", ".toml", ".yaml"])
     def test_data_order(data_dir: Path, suffix: str) -> None:
         file = data_dir.joinpath("settings").with_suffix(suffix)
-        database = settings.SettingsParser(file).data["database"]
+        database = settings.SettingsParser([file]).data["database"]
         assert list(database) == ["username", "password"]
 
     @staticmethod
     def test_overriding(data_dir: Path) -> None:
         file = data_dir.joinpath("override.toml")
-        assert settings.SettingsParser(file).data == {
+        assert settings.SettingsParser([file]).data == {
             "foo": {"x": 100, "y": 20, "z": 3}
         }

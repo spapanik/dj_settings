@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 - Moved SettingsParser and setting to a new module
 - Renamed setting to get_setting
+- SettingsParser now accepts a list of paths to parse
 
 ### Removed
 
