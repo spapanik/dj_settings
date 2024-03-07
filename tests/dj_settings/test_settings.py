@@ -22,6 +22,7 @@ def config(data_dir: Path) -> Any:
             "PASSWORD", sections=["info"], default="super-secret-1234"
         )
         age: int = settings.settings_field("AGE", sections=["info"], rtype=int)
+        favourite_food: str = "bread"
 
     return Settings()
 
@@ -65,6 +66,7 @@ def test_settings_class(config: Any) -> None:
     assert config.email == "madeleine@montreuil.gov"
     assert config.password == "super-secret-1234"  # noqa: S105
     assert config.age == 55
+    assert config.favourite_food == "bread"
 
 
 class TestSettingsParser:
