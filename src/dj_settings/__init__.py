@@ -1,8 +1,8 @@
 from dj_settings.settings import (
-    SettingsParser,
+    ConfigParser,
     get_setting,
     settings_class,
     settings_field,
 )
 
-__all__ = ["SettingsParser", "get_setting", "settings_class", "settings_field"]
+__all__ = ["ConfigParser", "get_setting", "settings_class", "settings_field"]

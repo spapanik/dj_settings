@@ -18,7 +18,7 @@ from dj_settings.utils import (
 )
 
 
-class SettingsParser:
+class ConfigParser:
     __slots__ = ["paths", "_data"]
 
     def __init__(
@@ -65,9 +65,7 @@ def get_setting(
     if filename is not None:
         if project_dir is not None:
             project_dir = Path(project_dir)
-        parser = SettingsParser(
-            get_config_paths(Path(filename), project_dir=project_dir)
-        )
+        parser = ConfigParser(get_config_paths(Path(filename), project_dir=project_dir))
         try:
             value = parser.extract_value(name, sections)
         except SectionError:
