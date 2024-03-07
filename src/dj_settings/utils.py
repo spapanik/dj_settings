@@ -36,15 +36,17 @@ def deep_merge(dict_1: ConfDict, dict_2: ConfDict) -> ConfDict:
     return output
 
 
-def _get_config_paths(filename: Path, base_dir: Path | None) -> Iterator[Path]:
-    if base_dir is not None:
-        yield base_dir.joinpath(filename)
+def _get_config_paths(filename: Path, project_dir: Path | None) -> Iterator[Path]:
+    if project_dir is not None:
+        yield project_dir.joinpath(filename)
     yield HOME_CONF.joinpath(filename)
     yield ETC.joinpath(filename)
 
 
-def get_config_paths(filename: Path, *, base_dir: Path | None = None) -> Iterator[Path]:
-    for path in _get_config_paths(filename, base_dir=base_dir):
+def get_config_paths(
+    filename: Path, *, project_dir: Path | None = None
+) -> Iterator[Path]:
+    for path in _get_config_paths(filename, project_dir=project_dir):
         if os.access(path, os.R_OK) and path.is_file():
             yield path
 

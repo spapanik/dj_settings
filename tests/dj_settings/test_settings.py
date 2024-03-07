@@ -14,7 +14,7 @@ def config(data_dir: Path) -> Any:
     os.environ["USER"] = "Monsieur Madeleine"
     os.environ["AGE"] = "55"
 
-    @settings.settings_class(base_dir=data_dir, filename="config.yml")
+    @settings.settings_class(project_dir=data_dir, filename="config.yml")
     class Settings:
         user: str = settings.settings_field("USER", allow_env=False, sections=["info"])
         email: str = settings.settings_field("email", sections=["info"])
@@ -43,7 +43,7 @@ def test_setting(
         settings.get_setting(
             attribute,
             allow_env=allow_env,
-            base_dir=data_dir,
+            project_dir=data_dir,
             filename="config.yml",
             sections=["info"],
             default="default",

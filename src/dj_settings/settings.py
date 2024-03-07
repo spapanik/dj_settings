@@ -53,7 +53,7 @@ def get_setting(
     name: str,
     *,
     allow_env: bool = True,
-    base_dir: str | Path | None = None,
+    project_dir: str | Path | None = None,
     filename: str | Path | None = None,
     sections: Iterable[Any] = (),
     rtype: type = str,
@@ -63,9 +63,11 @@ def get_setting(
         return rtype(os.environ[name])
 
     if filename is not None:
-        if base_dir is not None:
-            base_dir = Path(base_dir)
-        parser = SettingsParser(get_config_paths(Path(filename), base_dir=base_dir))
+        if project_dir is not None:
+            project_dir = Path(project_dir)
+        parser = SettingsParser(
+            get_config_paths(Path(filename), project_dir=project_dir)
+        )
         try:
             value = parser.extract_value(name, sections)
         except SectionError:
@@ -94,11 +96,13 @@ class _SettingsField:
         self.rtype = rtype
         self.default = default
 
-    def __call__(self, base_dir: Path | str | None, filename: Path | str | None) -> Any:
+    def __call__(
+        self, project_dir: Path | str | None, filename: Path | str | None
+    ) -> Any:
         return get_setting(
             self.name,
             allow_env=self.allow_env,
-            base_dir=base_dir,
+            project_dir=project_dir,
             filename=filename,
             sections=self.sections,
             rtype=self.rtype,
@@ -121,20 +125,20 @@ def settings_field(
 
 
 def _preprocess_class(
-    cls: type, base_dir: Path | str | None, filename: Path | str | None
+    cls: type, project_dir: Path | str | None, filename: Path | str | None
 ) -> type:
     for attribute in inspect.get_annotations(cls):
         value = getattr(cls, attribute, None)
         if isinstance(value, _SettingsField):
-            setattr(cls, attribute, field(default=value(base_dir, filename)))
+            setattr(cls, attribute, field(default=value(project_dir, filename)))
     return cls
 
 
 def settings_class(
-    base_dir: Path | str | None = None, filename: Path | str | None = None
+    project_dir: Path | str | None = None, filename: Path | str | None = None
 ) -> Callable[[type], type]:
     def wrap(cls: type) -> type:
-        cls = _preprocess_class(cls, base_dir, filename)
+        cls = _preprocess_class(cls, project_dir, filename)
         return dataclass(frozen=True)(cls)
 
     return wrap
