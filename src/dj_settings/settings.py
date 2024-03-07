@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import inspect
 import os
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+from dj_settings._seven import get_annotations
 from dj_settings.exceptions import SectionError
 from dj_settings.types import ConfDict, SupportedType
 from dj_settings.utils import (
@@ -127,7 +127,7 @@ def settings_field(
 def _preprocess_class(
     cls: type, project_dir: Path | str | None, filename: Path | str | None
 ) -> type:
-    for attribute in inspect.get_annotations(cls):
+    for attribute in get_annotations(cls):
         value = getattr(cls, attribute, None)
         if isinstance(value, _SettingsField):
             setattr(cls, attribute, field(default=value(project_dir, filename)))
