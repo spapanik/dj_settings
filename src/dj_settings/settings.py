@@ -108,7 +108,7 @@ class _SettingsField:
         )
 
 
-def settings_field(
+def config_value(
     name: str,
     *,
     allow_env: bool = True,

@@ -16,12 +16,12 @@ def config(data_dir: Path) -> Any:
 
     @settings.settings_class(project_dir=data_dir, filename="config.yml")
     class Settings:
-        user: str = settings.settings_field("USER", allow_env=False, sections=["info"])
-        email: str = settings.settings_field("email", sections=["info"])
-        password: str = settings.settings_field(
+        user: str = settings.config_value("USER", allow_env=False, sections=["info"])
+        email: str = settings.config_value("email", sections=["info"])
+        password: str = settings.config_value(
             "PASSWORD", sections=["info"], default="super-secret-1234"
         )
-        age: int = settings.settings_field("AGE", sections=["info"], rtype=int)
+        age: int = settings.config_value("AGE", sections=["info"], rtype=int)
         favourite_food: str = "bread"
 
     return Settings()
