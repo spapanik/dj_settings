@@ -19,7 +19,7 @@ from dj_settings.utils import (
 
 
 class ConfigParser:
-    __slots__ = ["paths", "_data", "_merge_arrays"]
+    __slots__ = ["_paths", "_data", "_merge_arrays"]
 
     def __init__(
         self,
@@ -28,7 +28,7 @@ class ConfigParser:
         *,
         merge_arrays: bool = False,
     ):
-        self.paths = {Path(path): get_type(Path(path), force_type) for path in paths}
+        self._paths = {Path(path): get_type(Path(path), force_type) for path in paths}
         self._data: ConfDict | None = None
         self._merge_arrays = merge_arrays
 
@@ -36,7 +36,7 @@ class ConfigParser:
     def data(self) -> ConfDict:
         if self._data is None:
             self._data = {}
-            for base_path, base_type in self.paths.items():
+            for base_path, base_type in self._paths.items():
                 same_suffix = base_type != "env"
                 for path in get_override_paths(base_path, same_suffix=same_suffix):
                     self._data = deep_merge(
