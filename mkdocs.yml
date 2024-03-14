@@ -5,7 +5,10 @@ repo_url: https://github.com/spapanik/dj_settings
 nav:
   - Home: README.md
   - Installation: installation.md
-  - Usage: usage.md
+  - Usage:
+      - usage/index.md
+      - Parsers: usage/parsers.md
+      - Decorator: usage/decorator.md
   - About:
       - License: LICENSE.md
       - Changelog: CHANGELOG.md
