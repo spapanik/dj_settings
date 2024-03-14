@@ -9,9 +9,10 @@
 [![Lint: ruff][ruff_badge]][ruff_url]
 
 `dj_settings` offers way to add project settings in a way that has been battle-tested for years
-in numerous UNIX apps, reading from the value `/etc/<conf_path>` or `~/.config/<conf_path>` or
-`<proj_path>/<conf_path>` or an `ENV VAR`, allowing overriding from the next read location.
-It started by targeting django, but it has grown to be used as a general settings parser.
+in numerous UNIX apps, reading from the value `/etc/<config_file>` or `~/.config/<config_file>` or
+`/path/to/project/<config_file>` or an `ENV VAR`, allowing overriding from the next read location.
+All of them allow overriding `/path/to/config/file.ext` with `/path/to/config/file.ext.d/<filename>.ext`.
+It started by targeting django, but it has grown to be used as a general settings or config parser.
 
 ### Usage
 
