@@ -26,13 +26,20 @@ def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
                 yield path
 
 
-def deep_merge(dict_1: ConfDict, dict_2: ConfDict) -> ConfDict:
-    output = dict_1.copy()
-    for key, value in dict_2.items():
-        if isinstance(dict_1.get(key), dict) and isinstance(value, dict):
-            output[key] = deep_merge(dict_1[key], value)
-        else:
-            output[key] = value
+def deep_merge(*dictionaries: ConfDict, merge_arrays: bool = False) -> ConfDict:
+    output = dictionaries[0].copy()
+    for dictionary in dictionaries[1:]:
+        for key, value in dictionary.items():
+            if isinstance(output.get(key), dict) and isinstance(value, dict):
+                output[key] = deep_merge(output[key], value)
+            elif (
+                merge_arrays
+                and isinstance(output.get(key), list)
+                and isinstance(value, list)
+            ):
+                output[key] = output[key] + value
+            else:
+                output[key] = value
     return output
 
 

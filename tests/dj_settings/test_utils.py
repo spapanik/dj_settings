@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from dj_settings import utils
-from dj_settings.types import SupportedType
+from dj_settings.types import ConfDict, SupportedType
 
 
 @pytest.mark.parametrize(
@@ -37,22 +37,39 @@ def test_get_override_paths(
 
 
 @pytest.mark.parametrize(
-    ("base", "override", "expected"),
+    ("dictionaries", "merge_arrays", "expected"),
     [
-        ({"list": [1, 2, 3]}, {"list": [4, 5]}, {"list": [4, 5]}),
+        (({"list": [1]}, {"list": [2]}), True, {"list": [1, 2]}),
+        (({"list": [1]}, {"list": [2]}), False, {"list": [2]}),
         (
-            {"dict": {"x": 1, "y": 2}},
-            {"dict": {"x": "a", "z": "b"}},
-            {"dict": {"x": "a", "y": 2, "z": "b"}},
+            (
+                {"dict": {"value_1": 1, "value_2": 2}},
+                {},
+                {"stray_key": "stray_value"},
+                {"dict": {"value_1": 2, "value_3": 3}},
+            ),
+            False,
+            {
+                "dict": {"value_1": 2, "value_2": 2, "value_3": 3},
+                "stray_key": "stray_value",
+            },
+        ),
+        (
+            (
+                {"int_1": 1, "int_2": 1},
+                {"int_1": 2, "int_3": 2},
+                {"int_1": 3, "int_3": 3},
+                {"int_1": 4, "int_4": 4},
+            ),
+            False,
+            {"int_1": 4, "int_2": 1, "int_3": 3, "int_4": 4},
         ),
     ],
 )
 def test_deep_merge(
-    base: dict[str, list[int]],
-    override: dict[str, list[int]],
-    expected: dict[str, list[int]],
+    dictionaries: tuple[ConfDict, ...], merge_arrays: bool, expected: ConfDict
 ) -> None:
-    assert utils.deep_merge(base, override) == expected
+    assert utils.deep_merge(*dictionaries, merge_arrays=merge_arrays) == expected
 
 
 @pytest.mark.parametrize(
