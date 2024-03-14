@@ -52,15 +52,17 @@ class ConfigParser:
 def get_setting(
     name: str,
     *,
-    allow_env: bool = True,
+    use_env: bool | str = True,
     project_dir: str | Path | None = None,
     filename: str | Path | None = None,
     sections: Iterable[Any] = (),
     rtype: type = str,
     default: Any = None,
 ) -> Any:
-    if allow_env and os.getenv(name) is not None:
-        return rtype(os.environ[name])
+    if use_env:
+        env_var = name if use_env is True else use_env
+        if os.getenv(env_var) is not None:
+            return rtype(os.environ[env_var])
 
     if filename is not None:
         if project_dir is not None:
@@ -77,19 +79,19 @@ def get_setting(
 
 
 class _SettingsField:
-    __slots__ = ["name", "allow_env", "sections", "rtype", "default"]
+    __slots__ = ["name", "use_env", "sections", "rtype", "default"]
 
     def __init__(
         self,
         name: str,
         *,
-        allow_env: bool,
+        use_env: bool | str,
         sections: Iterable[Any],
         rtype: type,
         default: Any,
     ):
         self.name = name
-        self.allow_env = allow_env
+        self.use_env = use_env
         self.sections = sections
         self.rtype = rtype
         self.default = default
@@ -99,7 +101,7 @@ class _SettingsField:
     ) -> Any:
         return get_setting(
             self.name,
-            allow_env=self.allow_env,
+            use_env=self.use_env,
             project_dir=project_dir,
             filename=filename,
             sections=self.sections,
@@ -111,14 +113,14 @@ class _SettingsField:
 def config_value(
     name: str,
     *,
-    allow_env: bool = True,
+    use_env: bool | str = True,
     sections: Iterable[Any] = (),
     rtype: type = str,
     default: Any = None,
 ) -> Any:
 
     return _SettingsField(
-        name, allow_env=allow_env, sections=sections, rtype=rtype, default=default
+        name, use_env=use_env, sections=sections, rtype=rtype, default=default
     )
 
 

@@ -16,7 +16,7 @@ def config(data_dir: Path) -> Any:
 
     @settings.settings_class(project_dir=data_dir, filename="config.yml")
     class Settings:
-        user: str = settings.config_value("USER", allow_env=False, sections=["info"])
+        user: str = settings.config_value("USER", use_env=False, sections=["info"])
         email: str = settings.config_value("email", sections=["info"])
         password: str = settings.config_value(
             "PASSWORD", sections=["info"], default="super-secret-1234"
@@ -28,7 +28,7 @@ def config(data_dir: Path) -> Any:
 
 
 @pytest.mark.parametrize(
-    ("attribute", "allow_env", "expected"),
+    ("attribute", "use_env", "expected"),
     [
         ("USER", True, "Monsieur Madeleine"),
         ("USER", False, "Jean Valjean"),
@@ -36,14 +36,12 @@ def config(data_dir: Path) -> Any:
         ("email", False, "madeleine@montreuil.gov"),
     ],
 )
-def test_setting(
-    data_dir: Path, attribute: str, allow_env: bool, expected: str
-) -> None:
+def test_setting(data_dir: Path, attribute: str, use_env: bool, expected: str) -> None:
     os.environ["USER"] = "Monsieur Madeleine"
     assert (
         settings.get_setting(
             attribute,
-            allow_env=allow_env,
+            use_env=use_env,
             project_dir=data_dir,
             filename="config.yml",
             sections=["info"],
@@ -53,12 +51,14 @@ def test_setting(
     )
 
 
-@pytest.mark.parametrize(("allow_env", "expected"), [(True, "env"), (False, "default")])
-def test_setting_without_file(allow_env: bool, expected: str) -> None:
+@pytest.mark.parametrize(
+    ("use_env", "expected"),
+    [(True, "env"), ("ANOTHER_VAR", "another_env"), (False, "default")],
+)
+def test_setting_without_file(use_env: bool | str, expected: str) -> None:
     os.environ["VAR"] = "env"
-    assert (
-        settings.get_setting("VAR", allow_env=allow_env, default="default") == expected
-    )
+    os.environ["ANOTHER_VAR"] = "another_env"
+    assert settings.get_setting("VAR", use_env=use_env, default="default") == expected
 
 
 def test_settings_class(config: Any) -> None:

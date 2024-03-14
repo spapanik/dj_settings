@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - Renamed SettingsParser to ConfigParser
 - Renamed setting to get_setting
 - SettingsParser now accepts a list of paths to parse
+- allow_env is now called use_env and it can take a string to change the name for env vars
 
 ### Removed
 
