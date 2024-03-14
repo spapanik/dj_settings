@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+## [5.0.0] - 2024-03-14
+
 ### Added
 
 - Added a @settings_class decorator to create settings classes
@@ -133,7 +135,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
-[Unreleased]: https://github.com/spapanik/dj_settings/compare/v4.2.1...main
+[Unreleased]: https://github.com/spapanik/dj_settings/compare/v5.0.0...main
+[5.0.0]: https://github.com/spapanik/dj_settings/compare/v4.2.1...v5.0.0
 [4.2.1]: https://github.com/spapanik/dj_settings/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/spapanik/dj_settings/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/spapanik/dj_settings/compare/v4.0.0...v4.1.0

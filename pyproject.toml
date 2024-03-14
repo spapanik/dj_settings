@@ -126,7 +126,7 @@ skip_empty = true
 
 [tool.poetry]
 name = "dj_settings"
-version = "4.2.1"
+version = "5.0.0"
 description = "project settings the UNIX way"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",
