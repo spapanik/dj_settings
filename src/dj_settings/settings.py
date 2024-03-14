@@ -19,13 +19,18 @@ from dj_settings.utils import (
 
 
 class ConfigParser:
-    __slots__ = ["paths", "_data"]
+    __slots__ = ["paths", "_data", "_merge_arrays"]
 
     def __init__(
-        self, paths: Iterable[str | Path], force_type: SupportedType | None = None
+        self,
+        paths: Iterable[str | Path],
+        force_type: SupportedType | None = None,
+        *,
+        merge_arrays: bool = False,
     ):
         self.paths = {Path(path): get_type(Path(path), force_type) for path in paths}
         self._data: ConfDict | None = None
+        self._merge_arrays = merge_arrays
 
     @property
     def data(self) -> ConfDict:
@@ -34,7 +39,11 @@ class ConfigParser:
             for base_path, base_type in self.paths.items():
                 same_suffix = base_type != "env"
                 for path in get_override_paths(base_path, same_suffix=same_suffix):
-                    self._data = deep_merge(self._data, extract_data(path, base_type))
+                    self._data = deep_merge(
+                        self._data,
+                        extract_data(path, base_type),
+                        merge_arrays=self._merge_arrays,
+                    )
         return self._data
 
     def extract_value(self, name: str, sections: Iterable[Any]) -> Any:
@@ -56,6 +65,7 @@ def get_setting(
     project_dir: str | Path | None = None,
     filename: str | Path | None = None,
     sections: Iterable[Any] = (),
+    merge_arrays: bool = False,
     rtype: type = str,
     default: Any = None,
 ) -> Any:
@@ -67,7 +77,10 @@ def get_setting(
     if filename is not None:
         if project_dir is not None:
             project_dir = Path(project_dir)
-        parser = ConfigParser(get_config_paths(Path(filename), project_dir=project_dir))
+        parser = ConfigParser(
+            get_config_paths(Path(filename), project_dir=project_dir),
+            merge_arrays=merge_arrays,
+        )
         try:
             value = parser.extract_value(name, sections)
         except SectionError:
@@ -79,7 +92,7 @@ def get_setting(
 
 
 class _SettingsField:
-    __slots__ = ["name", "use_env", "sections", "rtype", "default"]
+    __slots__ = ["name", "use_env", "sections", "merge_arrays", "rtype", "default"]
 
     def __init__(
         self,
@@ -87,12 +100,14 @@ class _SettingsField:
         *,
         use_env: bool | str,
         sections: Iterable[Any],
+        merge_arrays: bool,
         rtype: type,
         default: Any,
     ):
         self.name = name
         self.use_env = use_env
         self.sections = sections
+        self.merge_arrays = merge_arrays
         self.rtype = rtype
         self.default = default
 
@@ -105,6 +120,7 @@ class _SettingsField:
             project_dir=project_dir,
             filename=filename,
             sections=self.sections,
+            merge_arrays=self.merge_arrays,
             rtype=self.rtype,
             default=self.default,
         )
@@ -115,12 +131,18 @@ def config_value(
     *,
     use_env: bool | str = True,
     sections: Iterable[Any] = (),
+    merge_arrays: bool = False,
     rtype: type = str,
     default: Any = None,
 ) -> Any:
 
     return _SettingsField(
-        name, use_env=use_env, sections=sections, rtype=rtype, default=default
+        name,
+        use_env=use_env,
+        sections=sections,
+        merge_arrays=merge_arrays,
+        rtype=rtype,
+        default=default,
     )
 
 

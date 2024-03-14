@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Added
 
 - Added a @settings_class decorator to create settings classes
+- Allowed all public classes to optionally merge arrays
 
 ### Changed
 
