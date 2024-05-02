@@ -15,7 +15,7 @@ its values.
 
 `dj_settings` exposes the following for public usage:
 
-* `ConfigParser`, a class to parse settings file (with their overrides)
-* `get_setting`, a method to parse a single setting
-* `settings_class`, a decorator to create a settings class
-* `config_value`, which represents an attribute of a settings class
+-   `ConfigParser`, a class to parse settings file (with their overrides)
+-   `get_setting`, a method to parse a single setting
+-   `settings_class`, a decorator to create a settings class
+-   `config_value`, which represents an attribute of a settings class
