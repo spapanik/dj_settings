@@ -1,4 +1,4 @@
-## settings_classes
+## Settings classes
 
 Another way to use `dj_settings` is to use it as a decorator to create a settings class.
 

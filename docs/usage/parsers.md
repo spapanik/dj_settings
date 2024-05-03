@@ -1,4 +1,4 @@
-## parsers
+## Parsers
 
 One way to use `dj_settings` is to use it to parse config.
 
