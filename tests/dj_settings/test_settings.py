@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from dj_settings import settings
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture()

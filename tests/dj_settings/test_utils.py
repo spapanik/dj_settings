@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from dj_settings import utils
-from dj_settings.types import ConfDict, SupportedType
+
+if TYPE_CHECKING:
+    from dj_settings.types import ConfDict, SupportedType
 
 
 @pytest.mark.parametrize(
