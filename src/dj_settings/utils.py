@@ -3,14 +3,17 @@ from __future__ import annotations
 import json
 import os
 from configparser import RawConfigParser
-from pathlib import Path
-from typing import Iterator, cast
+from typing import TYPE_CHECKING, cast
 
 import yaml
 
 from dj_settings._seven import toml_parser
 from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
 from dj_settings.types import ConfDict, SupportedType
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from pathlib import Path
 
 
 def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:

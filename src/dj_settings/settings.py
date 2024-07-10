@@ -4,11 +4,10 @@ import os
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import TYPE_CHECKING, Any, Callable
 
 from dj_settings._seven import get_annotations
 from dj_settings.exceptions import SectionError
-from dj_settings.types import ConfDict, SupportedType
 from dj_settings.utils import (
     deep_merge,
     extract_data,
@@ -16,6 +15,11 @@ from dj_settings.utils import (
     get_override_paths,
     get_type,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from dj_settings.types import ConfDict, SupportedType
 
 
 class ConfigParser:
@@ -27,7 +31,7 @@ class ConfigParser:
         force_type: SupportedType | None = None,
         *,
         merge_arrays: bool = False,
-    ):
+    ) -> None:
         self._paths = {Path(path): get_type(Path(path), force_type) for path in paths}
         self._data: ConfDict | None = None
         self._merge_arrays = merge_arrays
@@ -103,7 +107,7 @@ class _SettingsField:
         merge_arrays: bool,
         rtype: type,
         default: Any,
-    ):
+    ) -> None:
         self.name = name
         self.use_env = use_env
         self.sections = sections

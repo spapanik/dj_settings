@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Removed
+
+-   Dropped python 3.8 support
+
 ## [5.0.0] - 2024-03-14
 
 ### Added
