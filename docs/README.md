@@ -27,16 +27,16 @@ with ENV VARs and .d directories.
 
 [test_badge]: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml/badge.svg
 [test_url]: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml
-[licence_badge]: https://img.shields.io/badge/license-LGPL_v3-blue.svg
+[licence_badge]: https://img.shields.io/pypi/l/dj_settings
 [licence_url]: https://github.com/spapanik/dj_settings/blob/main/docs/LICENSE.md
 [pypi_badge]: https://img.shields.io/pypi/v/dj_settings
 [pypi_url]: https://pypi.org/project/dj_settings
 [pepy_badge]: https://pepy.tech/badge/dj_settings
 [pepy_url]: https://pepy.tech/project/dj_settings
-[black_badge]: https://img.shields.io/badge/code_style-black-000000.svg
+[black_badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black_url]: https://github.com/psf/black
-[yam_badge]: https://img.shields.io/badge/build_automation-yamk-success
-[yam_url]: https://github.com/spapanik/dj_settings
+[yam_badge]: https://img.shields.io/badge/build%20automation-yamk-success
+[yam_url]: https://github.com/spapanik/yamk
 [ruff_badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
 [ruff_url]: https://github.com/charliermarsh/ruff
 [Documentation]: https://dj-settings.readthedocs.io/en/stable/
