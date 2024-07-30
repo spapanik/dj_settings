@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+-   Changed license to BSD 3-Clause
+
 ### Removed
 
 -   Dropped python 3.8 support
