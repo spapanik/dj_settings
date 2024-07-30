@@ -50,14 +50,15 @@ class ConfigParser:
                     )
         return self._data
 
-    def extract_value(self, name: str, sections: Iterable[Any]) -> Any:
+    def extract_value(self, name: str, sections: Iterable[str]) -> Any:
         data = self.data
+        path = []
         for section in chain(sections, [name]):
+            path.append(section)
             try:
                 data = data[section]
-            except (KeyError, AttributeError) as exc:  # noqa: PERF203
-                msg = "Missing section"
-                raise SectionError(msg) from exc
+            except (KeyError, AttributeError) as exc:
+                raise SectionError(path) from exc
 
         return data
 
@@ -68,7 +69,7 @@ def get_setting(
     use_env: bool | str = True,
     project_dir: str | Path | None = None,
     filename: str | Path | None = None,
-    sections: Iterable[Any] = (),
+    sections: Iterable[str] = (),
     merge_arrays: bool = False,
     rtype: type = str,
     default: Any = None,
@@ -103,7 +104,7 @@ class _SettingsField:
         name: str,
         *,
         use_env: bool | str,
-        sections: Iterable[Any],
+        sections: Iterable[str],
         merge_arrays: bool,
         rtype: type,
         default: Any,
@@ -134,7 +135,7 @@ def config_value(
     name: str,
     *,
     use_env: bool | str = True,
-    sections: Iterable[Any] = (),
+    sections: Iterable[str] = (),
     merge_arrays: bool = False,
     rtype: type = str,
     default: Any = None,

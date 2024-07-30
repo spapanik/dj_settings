@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Changed
 
 -   Changed license to BSD 3-Clause
+-   Improved error message in section errors
 
 ### Removed
 
