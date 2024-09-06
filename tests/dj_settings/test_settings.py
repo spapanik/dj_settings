@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.fixture()
+@pytest.fixture
 def config(data_dir: Path) -> Any:
     os.environ["USER"] = "Monsieur Madeleine"
     os.environ["AGE"] = "55"
