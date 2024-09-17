@@ -4,7 +4,7 @@ import sys
 
 MINOR = sys.version_info.minor
 
-if MINOR >= 10:
+if MINOR >= 10:  # noqa: PLR2004
     import inspect
 
     get_annotations = inspect.get_annotations
@@ -16,7 +16,7 @@ else:
         return cls.__annotations__
 
 
-if MINOR >= 11:
+if MINOR >= 11:  # noqa: PLR2004
     import tomllib
 
     toml_parser = tomllib.load

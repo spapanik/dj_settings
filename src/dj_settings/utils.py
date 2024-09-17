@@ -24,9 +24,9 @@ def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
     override_dir = path.with_suffix(f"{suffix}.d")
     if override_dir.is_dir():
         glob = f"*{suffix}" if same_suffix else f"{path.stem}*"
-        for path in sorted(override_dir.glob(glob)):
-            if path.is_file() and os.access(path, os.R_OK):
-                yield path
+        for override_path in sorted(override_dir.glob(glob)):
+            if override_path.is_file() and os.access(override_path, os.R_OK):
+                yield override_path
 
 
 def deep_merge(*dictionaries: ConfDict, merge_arrays: bool = False) -> ConfDict:
