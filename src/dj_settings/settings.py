@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class ConfigParser:
-    __slots__ = ["_paths", "_data", "_merge_arrays"]
+    __slots__ = ("_data", "_merge_arrays", "_paths")
 
     def __init__(
         self,
@@ -97,7 +97,7 @@ def get_setting(
 
 
 class _SettingsField:
-    __slots__ = ["name", "use_env", "sections", "merge_arrays", "rtype", "default"]
+    __slots__ = ("default", "merge_arrays", "name", "rtype", "sections", "use_env")
 
     def __init__(
         self,
