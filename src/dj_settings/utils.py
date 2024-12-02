@@ -3,17 +3,18 @@ from __future__ import annotations
 import json
 import os
 from configparser import RawConfigParser
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 
 from dj_settings._seven import toml_parser
 from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
-from dj_settings.types import ConfDict, SupportedType
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
+
+    from dj_settings.types import SupportedType
 
 
 def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
@@ -29,18 +30,24 @@ def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
                 yield override_path
 
 
-def deep_merge(*dictionaries: ConfDict, merge_arrays: bool = False) -> ConfDict:
+def deep_merge(  # type: ignore[misc]
+    *dictionaries: dict[str, Any], merge_arrays: bool = False
+) -> dict[str, Any]:
     output = dictionaries[0].copy()
     for dictionary in dictionaries[1:]:
         for key, value in dictionary.items():
-            if isinstance(output.get(key), dict) and isinstance(value, dict):
-                output[key] = deep_merge(output[key], value)
+            if key not in output:
+                output[key] = value
+                continue
+            current_value = output[key]
+            if isinstance(current_value, dict) and isinstance(value, dict):
+                output[key] = deep_merge(current_value, value)
             elif (
                 merge_arrays
-                and isinstance(output.get(key), list)
+                and isinstance(current_value, list)
                 and isinstance(value, list)
             ):
-                output[key] = output[key] + value
+                output[key] = current_value + value
             else:
                 output[key] = value
     return output
@@ -83,7 +90,9 @@ def get_type(path: Path, force_type: SupportedType | None = None) -> SupportedTy
     raise ValueError(msg)
 
 
-def extract_data(path: Path, settings_type: SupportedType) -> ConfDict:
+def extract_data(  # type: ignore[misc]
+    path: Path, settings_type: SupportedType
+) -> dict[str, Any]:
     if settings_type == "env":
         data = {}
         with path.open() as file:
@@ -97,7 +106,7 @@ def extract_data(path: Path, settings_type: SupportedType) -> ConfDict:
 
     if settings_type == "json":
         with path.open() as file:
-            return cast(ConfDict, json.load(file))
+            return cast(dict[str, Any], json.load(file))  # type: ignore[misc]
 
     if settings_type == "ini":
         parser = RawConfigParser(default_section=None)  # type: ignore[call-overload]
@@ -110,4 +119,4 @@ def extract_data(path: Path, settings_type: SupportedType) -> ConfDict:
             return toml_parser(binary_file)
 
     with path.open() as file:
-        return cast(ConfDict, yaml.safe_load(file))
+        return cast(dict[str, Any], yaml.safe_load(file))  # type: ignore[misc]

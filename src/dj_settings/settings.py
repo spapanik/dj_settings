@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 
 from dj_settings._seven import get_annotations
 from dj_settings.exceptions import SectionError
@@ -19,7 +19,10 @@ from dj_settings.utils import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from dj_settings.types import ConfDict, SupportedType
+    from dj_settings.types import SupportedType
+
+
+T = TypeVar("T")
 
 
 class ConfigParser:
@@ -33,11 +36,11 @@ class ConfigParser:
         merge_arrays: bool = False,
     ) -> None:
         self._paths = {Path(path): get_type(Path(path), force_type) for path in paths}
-        self._data: ConfDict | None = None
+        self._data: dict[str, Any] | None = None  # type: ignore[misc]
         self._merge_arrays = merge_arrays
 
     @property
-    def data(self) -> ConfDict:
+    def data(self) -> dict[str, Any]:  # type: ignore[misc]
         if self._data is None:
             self._data = {}
             for base_path, base_type in self._paths.items():
@@ -50,13 +53,13 @@ class ConfigParser:
                     )
         return self._data
 
-    def extract_value(self, name: str, sections: Iterable[str]) -> Any:
-        data = self.data
+    def extract_value(self, name: str, sections: Iterable[str]) -> object:
+        data: object | dict[str, Any] = self.data  # type: ignore[misc]
         path = []
         for section in chain(sections, [name]):
             path.append(section)
             try:
-                data = data[section]
+                data = data[section]  # type: ignore[index]
             except (KeyError, AttributeError) as exc:
                 raise SectionError(path) from exc
 
@@ -71,9 +74,9 @@ def get_setting(
     filename: str | Path | None = None,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: type = str,
-    default: Any = None,
-) -> Any:
+    rtype: Callable[[*tuple[object, ...]], T] | type = str,
+    default: T | None = None,
+) -> T | None:
     if use_env:
         env_var = name if use_env is True else use_env
         if os.getenv(env_var) is not None:
@@ -96,7 +99,7 @@ def get_setting(
     return default
 
 
-class _SettingsField:
+class _SettingsField(Generic[T]):
     __slots__ = ("default", "merge_arrays", "name", "rtype", "sections", "use_env")
 
     def __init__(
@@ -106,8 +109,8 @@ class _SettingsField:
         use_env: bool | str,
         sections: Iterable[str],
         merge_arrays: bool,
-        rtype: type,
-        default: Any,
+        rtype: Callable[[*tuple[object, ...]], T] | type = str,
+        default: T | None,
     ) -> None:
         self.name = name
         self.use_env = use_env
@@ -118,7 +121,7 @@ class _SettingsField:
 
     def __call__(
         self, project_dir: Path | str | None, filename: Path | str | None
-    ) -> Any:
+    ) -> T | None:
         return get_setting(
             self.name,
             use_env=self.use_env,
@@ -131,16 +134,20 @@ class _SettingsField:
         )
 
 
-def config_value(
+def config_value(  # type: ignore[misc]
     name: str,
     *,
     use_env: bool | str = True,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: type = str,
-    default: Any = None,
-) -> Any:
+    rtype: Callable[[*tuple[object, ...]], T] | type = str,
+    default: T | None = None,
+) -> Any:  # noqa: ANN401
+    """Get a settings value from the environment or a configuration file.
 
+    It should only be used with a class decorated with the `settings_class` decorator.
+    It returns Any, as the type is determined should be set by the class.
+    """
     return _SettingsField(
         name,
         use_env=use_env,

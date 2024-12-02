@@ -10,9 +10,8 @@ if MINOR >= 10:  # noqa: PLR2004
     get_annotations = inspect.get_annotations
 
 else:
-    from typing import Any
 
-    def get_annotations(cls: type) -> dict[str, Any]:
+    def get_annotations(cls: type) -> dict[str, object]:
         return cls.__annotations__
 
 

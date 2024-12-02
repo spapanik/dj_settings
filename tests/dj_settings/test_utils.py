@@ -8,7 +8,7 @@ import pytest
 from dj_settings import utils
 
 if TYPE_CHECKING:
-    from dj_settings.types import ConfDict, SupportedType
+    from dj_settings.types import SupportedType
 
 
 @pytest.mark.parametrize(
@@ -70,7 +70,9 @@ def test_get_override_paths(
     ],
 )
 def test_deep_merge(
-    dictionaries: tuple[ConfDict, ...], merge_arrays: bool, expected: ConfDict
+    dictionaries: tuple[dict[str, object], ...],
+    merge_arrays: bool,
+    expected: dict[str, object],
 ) -> None:
     assert utils.deep_merge(*dictionaries, merge_arrays=merge_arrays) == expected
 

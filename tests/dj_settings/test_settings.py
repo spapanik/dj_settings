@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Protocol
 
 import pytest
 
@@ -11,8 +11,16 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
+class Config(Protocol):
+    user: str
+    email: str
+    password: str
+    age: int
+    favourite_food: str
+
+
 @pytest.fixture
-def config(data_dir: Path) -> Any:
+def config(data_dir: Path) -> Config:
     os.environ["USER"] = "Monsieur Madeleine"
     os.environ["AGE"] = "55"
 
@@ -63,7 +71,7 @@ def test_setting_without_file(use_env: bool | str, expected: str) -> None:
     assert settings.get_setting("VAR", use_env=use_env, default="default") == expected
 
 
-def test_settings_class(config: Any) -> None:
+def test_settings_class(config: Config) -> None:
     assert config.user == "Jean Valjean"
     assert config.email == "madeleine@montreuil.gov"
     assert config.password == "super-secret-1234"  # noqa: S105
@@ -84,7 +92,7 @@ class TestConfigParser:
     @pytest.mark.parametrize("suffix", [".ini", ".json", ".toml", ".yaml"])
     def test_data_order(data_dir: Path, suffix: str) -> None:
         file = data_dir.joinpath("settings").with_suffix(suffix)
-        database = settings.ConfigParser([file]).data["database"]
+        database: dict[str, str] = settings.ConfigParser([file]).data["database"]
         assert list(database) == ["username", "password"]
 
     @staticmethod
