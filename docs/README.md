@@ -34,7 +34,7 @@ with ENV VARs and .d directories.
 [test_badge]: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml/badge.svg
 [test_url]: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml
 [licence_badge]: https://img.shields.io/pypi/l/dj_settings
-[licence_url]: https://github.com/spapanik/dj_settings/blob/main/docs/LICENSE.md
+[licence_url]: https://dj-settings.readthedocs.io/en/stable/LICENSE/
 [pypi_badge]: https://img.shields.io/pypi/v/dj_settings
 [pypi_url]: https://pypi.org/project/dj_settings
 [pepy_badge]: https://pepy.tech/badge/dj_settings
@@ -46,4 +46,4 @@ with ENV VARs and .d directories.
 [ruff_badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
 [ruff_url]: https://github.com/charliermarsh/ruff
 [Documentation]: https://dj-settings.readthedocs.io/en/stable/
-[Changelog]: https://github.com/spapanik/dj_settings/blob/main/docs/CHANGELOG.md
+[Changelog]: https://dj-settings.readthedocs.io/en/stable/CHANGELOG/
