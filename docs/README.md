@@ -4,6 +4,8 @@
 [![lint][lint_badge]][lint_url]
 [![tests][test_badge]][test_url]
 [![license][licence_badge]][licence_url]
+[![codecov][codecov_badge]][codecov_url]
+[![readthedocs][readthedocs_badge]][readthedocs_url]
 [![pypi][pypi_badge]][pypi_url]
 [![downloads][pepy_badge]][pepy_url]
 [![code style: black][black_badge]][black_url]
@@ -35,6 +37,10 @@ with ENV VARs and .d directories.
 [test_url]: https://github.com/spapanik/dj_settings/actions/workflows/tests.yml
 [licence_badge]: https://img.shields.io/pypi/l/dj_settings
 [licence_url]: https://dj-settings.readthedocs.io/en/stable/LICENSE/
+[codecov_badge]: https://codecov.io/github/spapanik/dj_settings/graph/badge.svg?token=Q20F84BW72
+[codecov_url]: https://codecov.io/github/spapanik/dj_settings
+[readthedocs_badge]: https://readthedocs.org/projects/dj-settings/badge/?version=latest
+[readthedocs_url]: https://dj-settings.readthedocs.io/en/latest/
 [pypi_badge]: https://img.shields.io/pypi/v/dj_settings
 [pypi_url]: https://pypi.org/project/dj_settings
 [pepy_badge]: https://pepy.tech/badge/dj_settings
