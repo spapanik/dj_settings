@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
-    from dj_settings.types import SupportedType
+    from dj_settings.type_defs import SupportedType
 
 
 def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:

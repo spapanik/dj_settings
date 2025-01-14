@@ -8,7 +8,7 @@ import pytest
 from dj_settings import utils
 
 if TYPE_CHECKING:
-    from dj_settings.types import SupportedType
+    from dj_settings.type_defs import SupportedType
 
 
 @pytest.mark.parametrize(

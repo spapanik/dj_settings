@@ -19,7 +19,7 @@ from dj_settings.utils import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from dj_settings.types import SupportedType
+    from dj_settings.type_defs import SupportedType
 
 
 T = TypeVar("T")
