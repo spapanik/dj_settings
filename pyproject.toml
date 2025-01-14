@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "phosphorus>=0.8",
+    "phosphorus>=0.10",
 ]
 build-backend = "phosphorus.construction.api"
 
@@ -39,20 +39,27 @@ homepage = "https://dj-settings.readthedocs.io/en/stable/"
 repository = "https://github.com/spapanik/dj_settings"
 documentation = "https://dj-settings.readthedocs.io/en/stable/"
 
-[tool.phosphorus.dev-dependencies]
+[dependency-groups]
 dev = [
     "ipdb~=0.13",
     "ipython~=8.18",
+    { include-group = "lint" },
+    { include-group = "test" },
+    { include-group = "docs" },
 ]
 lint = [
     "black~=24.10",
-    "mypy~=1.13",
+    "mypy~=1.14",
     "ruff~=0.8",
     "types-pyyaml~=6.0",
+    { include-group = "test_core" },
 ]
 test = [
-    "pytest~=8.3",
     "pytest-cov~=6.0",
+    { include-group = "test_core" },
+]
+test_core = [
+    "pytest~=8.3",
 ]
 docs = [
     "mkdocs~=1.6",
@@ -146,6 +153,9 @@ source = [
     "src/",
 ]
 data_file = ".cov_cache/coverage.dat"
+omit = [
+    "src/dj_settings/lib/type_defs.py",
+]
 
 [tool.coverage.report]
 exclude_also = [

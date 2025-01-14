@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import get_args
 
-from dj_settings.types import SupportedType
+from dj_settings.type_defs import SupportedType
 
 ETC = Path("/etc/")
 HOME_CONF = Path(os.environ.get("XDG_CONFIG_HOME", Path.home().joinpath(".config/")))
