@@ -154,6 +154,7 @@ source = [
 ]
 data_file = ".cov_cache/coverage.dat"
 omit = [
+    "src/dj_settings/_seven.py",
     "src/dj_settings/lib/type_defs.py",
 ]
 
@@ -162,7 +163,7 @@ exclude_also = [
     "if TYPE_CHECKING:",
     "raise NotImplementedError",
 ]
-fail_under = 75
+fail_under = 100
 precision = 2
 show_missing = true
 skip_covered = true

@@ -71,6 +71,10 @@ def test_setting_without_file(use_env: bool | str, expected: str) -> None:
     assert settings.get_setting("VAR", use_env=use_env, default="default") == expected
 
 
+def test_setting_without_directory() -> None:
+    assert settings.get_setting("VARIABLE", filename="missing_file.toml") is None
+
+
 def test_settings_class(config: Config) -> None:
     assert config.user == "Jean Valjean"
     assert config.email == "madeleine@montreuil.gov"
@@ -98,6 +102,8 @@ class TestConfigParser:
     @staticmethod
     def test_overriding(data_dir: Path) -> None:
         file = data_dir.joinpath("override.toml")
-        assert settings.ConfigParser([file]).data == {
-            "foo": {"x": 100, "y": 20, "z": 3}
-        }
+        parser = settings.ConfigParser([file])
+        read_1 = parser.data
+        read_2 = parser.data
+        assert read_1 == {"foo": {"x": 100, "y": 20, "z": 3}}
+        assert read_1 == read_2

@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     ("filename", "same_suffix", "expected_paths"),
     [
         (".env", False, [Path(".env.d/.env.01")]),
+        (".env.test", False, [Path(".env.test"), Path(".env.test.d/.env.01")]),
         (
             "override.toml",
             True,
@@ -92,8 +93,23 @@ def test_get_type(
     assert utils.get_type(path, force_type) == expected
 
 
+def test_get_unsupported_type() -> None:
+    with pytest.raises(ValueError, match="is not a supported extension"):
+        utils.get_type(Path("settings.ini"), "unsupported")  # type: ignore[arg-type]
+
+
+def test_get_non_inferrable_type() -> None:
+    with pytest.raises(ValueError, match="Cannot infer type of"):
+        utils.get_type(Path("settings.unsupported"))
+
+
 def test_extract_data(data_dir: Path) -> None:
     path = data_dir.joinpath("settings.toml")
     assert utils.extract_data(path, "toml") == {
         "database": {"username": "aria.stark", "password": "valar morghulis"}
     }
+
+
+def test_extract_data_from_env(data_dir: Path) -> None:
+    path = data_dir.joinpath(".env.test")
+    assert utils.extract_data(path, "env") == {"VARIABLE": "value"}
