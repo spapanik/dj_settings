@@ -36,11 +36,11 @@ class ConfigParser:
         merge_arrays: bool = False,
     ) -> None:
         self._paths = {Path(path): get_type(Path(path), force_type) for path in paths}
-        self._data: dict[str, Any] | None = None  # type: ignore[misc]
+        self._data: dict[str, Any] | None = None  # type: ignore[explicit-any]
         self._merge_arrays = merge_arrays
 
     @property
-    def data(self) -> dict[str, Any]:  # type: ignore[misc]
+    def data(self) -> dict[str, Any]:  # type: ignore[misc,explicit-any]
         if self._data is None:
             self._data = {}
             for base_path, base_type in self._paths.items():
@@ -54,7 +54,7 @@ class ConfigParser:
         return self._data
 
     def extract_value(self, name: str, sections: Iterable[str]) -> object:
-        data: object | dict[str, Any] = self.data  # type: ignore[misc]
+        data: object | dict[str, Any] = self.data  # type: ignore[explicit-any]
         path = []
         for section in chain(sections, [name]):
             path.append(section)
@@ -134,7 +134,7 @@ class _SettingsField(Generic[T]):
         )
 
 
-def config_value(  # type: ignore[misc]
+def config_value(  # type: ignore[explicit-any]
     name: str,
     *,
     use_env: bool | str = True,
