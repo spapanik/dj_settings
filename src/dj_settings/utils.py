@@ -30,9 +30,9 @@ def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
                 yield override_path
 
 
-def deep_merge(  # type: ignore[misc]
-    *dictionaries: dict[str, Any], merge_arrays: bool = False
-) -> dict[str, Any]:
+def deep_merge(
+    *dictionaries: dict[str, object], merge_arrays: bool = False
+) -> dict[str, object]:
     output = dictionaries[0].copy()
     for dictionary in dictionaries[1:]:
         for key, value in dictionary.items():
@@ -90,7 +90,7 @@ def get_type(path: Path, force_type: SupportedType | None = None) -> SupportedTy
     raise ValueError(msg)
 
 
-def extract_data(  # type: ignore[misc]
+def extract_data(  # type: ignore[explicit-any]
     path: Path, settings_type: SupportedType
 ) -> dict[str, Any]:
     if settings_type == "env":
@@ -106,7 +106,7 @@ def extract_data(  # type: ignore[misc]
 
     if settings_type == "json":
         with path.open() as file:
-            return cast(dict[str, Any], json.load(file))  # type: ignore[misc]
+            return cast(dict[str, Any], json.load(file))  # type: ignore[explicit-any]
 
     if settings_type == "ini":
         parser = RawConfigParser(default_section=None)  # type: ignore[call-overload]
@@ -119,4 +119,4 @@ def extract_data(  # type: ignore[misc]
             return toml_parser(binary_file)
 
     with path.open() as file:
-        return cast(dict[str, Any], yaml.safe_load(file))  # type: ignore[misc]
+        return cast(dict[str, Any], yaml.safe_load(file))  # type: ignore[explicit-any]
