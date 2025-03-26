@@ -29,7 +29,7 @@ classifiers = [
 
 requires-python = ">=3.9"
 dependencies = [
-    "pyutilkit~=0.6",
+    "pyutilkit~=0.10",
     "ruamel.yaml~=0.18",
     "tomli~=2.0; python_version<'3.11'",
 ]
@@ -49,7 +49,7 @@ dev = [
 ]
 lint = [
     "mypy~=1.15",
-    "ruff~=0.9",
+    "ruff~=0.11",
     { include-group = "test_core" },
 ]
 test = [

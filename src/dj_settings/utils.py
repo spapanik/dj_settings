@@ -106,7 +106,7 @@ def extract_data(  # type: ignore[explicit-any]
 
     if settings_type == "json":
         with path.open() as file:
-            return cast(dict[str, Any], json.load(file))  # type: ignore[explicit-any]
+            return cast("dict[str, Any]", json.load(file))  # type: ignore[explicit-any]
 
     if settings_type == "ini":
         parser = RawConfigParser(default_section=None)  # type: ignore[call-overload]
