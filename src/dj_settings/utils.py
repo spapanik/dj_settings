@@ -5,7 +5,7 @@ import os
 from configparser import RawConfigParser
 from typing import TYPE_CHECKING, Any, cast
 
-import yaml
+from ruamel.yaml import YAML
 
 from dj_settings._seven import toml_parser
 from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
@@ -118,5 +118,6 @@ def extract_data(  # type: ignore[explicit-any]
         with path.open("rb") as binary_file:
             return toml_parser(binary_file)
 
+    yaml = YAML(typ="safe")
     with path.open() as file:
-        return cast(dict[str, Any], yaml.safe_load(file))  # type: ignore[explicit-any]
+        return cast("dict[str, Any]", yaml.load(file))  # type: ignore[explicit-any]

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+-   Changed yaml parser to follow YAML 1.2 spec
+
 ## [6.0.0] - 2024-09-24
 
 ### Changed
