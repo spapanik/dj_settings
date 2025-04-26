@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+## [8.0.0] - 2025-04-26
+
 ### Changed
 
 -   Default has to be set, otherwise it will raise unless the setting is found
@@ -155,7 +157,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
-[Unreleased]: https://github.com/spapanik/dj_settings/compare/v7.0.0...main
+[Unreleased]: https://github.com/spapanik/dj_settings/compare/v8.0.0...main
+[8.0.0]: https://github.com/spapanik/dj_settings/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/spapanik/dj_settings/compare/v6.0.0...v7.0.0
 [6.0.0]: https://github.com/spapanik/dj_settings/compare/v5.0.0...v6.0.0
 [5.0.0]: https://github.com/spapanik/dj_settings/compare/v4.2.1...v5.0.0

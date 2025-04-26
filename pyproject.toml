@@ -6,7 +6,7 @@ build-backend = "phosphorus.construction.api"
 
 [project]
 name = "dj_settings"
-version = "7.0.0"
+version = "8.0.0"
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
