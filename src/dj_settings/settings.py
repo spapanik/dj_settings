@@ -6,6 +6,8 @@ from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 
+from pyutilkit.classes import Singleton
+
 from dj_settings._seven import get_annotations
 from dj_settings.exceptions import SectionError
 from dj_settings.utils import (
@@ -23,6 +25,13 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T")
+
+
+class _Undefined(metaclass=Singleton):
+    """Singleton class to represent an undefined value."""
+
+
+_UNDEFINED = _Undefined()
 
 
 class ConfigParser:
@@ -75,8 +84,8 @@ def get_setting(
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
     rtype: Callable[[*tuple[object, ...]], T] | type = str,
-    default: T | None = None,
-) -> T | None:
+    default: T | _Undefined = _UNDEFINED,
+) -> T:
     if use_env:
         env_var = name if use_env is True else use_env
         if os.getenv(env_var) is not None:
@@ -96,6 +105,10 @@ def get_setting(
         else:
             return rtype(value)
 
+    if isinstance(default, _Undefined):
+        msg = f"Setting {name} not found and no default value provided"
+        raise TypeError(msg)
+
     return default
 
 
@@ -110,7 +123,7 @@ class _SettingsField(Generic[T]):
         sections: Iterable[str],
         merge_arrays: bool,
         rtype: Callable[[*tuple[object, ...]], T] | type = str,
-        default: T | None,
+        default: T,
     ) -> None:
         self.name = name
         self.use_env = use_env
@@ -121,7 +134,7 @@ class _SettingsField(Generic[T]):
 
     def __call__(
         self, project_dir: Path | str | None, filename: Path | str | None
-    ) -> T | None:
+    ) -> T:
         return get_setting(
             self.name,
             use_env=self.use_env,
@@ -141,7 +154,7 @@ def config_value(  # type: ignore[explicit-any]
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
     rtype: Callable[[*tuple[object, ...]], T] | type = str,
-    default: T | None = None,
+    default: T | _Undefined = _UNDEFINED,
 ) -> Any:  # noqa: ANN401
     """Get a settings value from the environment or a configuration file.
 

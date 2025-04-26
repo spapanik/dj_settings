@@ -72,7 +72,13 @@ def test_setting_without_file(use_env: bool | str, expected: str) -> None:
 
 
 def test_setting_without_directory() -> None:
-    assert settings.get_setting("VARIABLE", filename="missing_file.toml") is None
+    value = settings.get_setting("VARIABLE", filename="missing_file.toml", default=None)
+    assert value is None
+
+
+def test_setting_without_directory_and_without_default() -> None:
+    with pytest.raises(TypeError):
+        settings.get_setting("VARIABLE", filename="missing_file.toml")
 
 
 def test_settings_class(config: Config) -> None:

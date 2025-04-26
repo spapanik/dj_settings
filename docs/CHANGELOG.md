@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+-   Default has to be set, otherwise it will raise unless the setting is found
+
 ## [7.0.0] - 2025-03-26
 
 ### Changed
