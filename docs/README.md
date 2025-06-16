@@ -26,8 +26,8 @@ with ENV VARs and .d directories.
 
 ## Links
 
--   [Documentation]
--   [Changelog]
+- [Documentation]
+- [Changelog]
 
 [build_badge]: https://github.com/spapanik/dj_settings/actions/workflows/build.yml/badge.svg
 [build_url]: https://github.com/spapanik/dj_settings/actions/workflows/build.yml

@@ -1,6 +1,6 @@
 {
-    "database": {
-        "username": "aria.stark",
-        "password": "valar morghulis"
-    }
+  "database": {
+    "username": "aria.stark",
+    "password": "valar morghulis"
+  }
 }
