@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pyutilkit.classes import Singleton
 
@@ -19,7 +19,7 @@ from dj_settings.utils import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
 
     from dj_settings.type_defs import SupportedType
 
@@ -49,7 +49,7 @@ class ConfigParser:
         self._merge_arrays = merge_arrays
 
     @property
-    def data(self) -> dict[str, Any]:  # type: ignore[misc,explicit-any]
+    def data(self) -> dict[str, Any]:  # type: ignore[explicit-any]
         if self._data is None:
             self._data = {}
             for base_path, base_type in self._paths.items():
