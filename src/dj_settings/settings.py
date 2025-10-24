@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from inspect import get_annotations
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pyutilkit.classes import Singleton
 
-from dj_settings._seven import get_annotations
 from dj_settings.exceptions import SectionError
 from dj_settings.utils import (
     deep_merge,
