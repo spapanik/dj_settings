@@ -6,7 +6,9 @@ build-backend = "phosphorus.construction.api"
 
 [project]
 name = "dj_settings"
-version = "8.0.0"
+dynamic = [
+    "version",
+]
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
@@ -58,7 +60,7 @@ test = [
     { include-group = "test_core" },
 ]
 test_core = [
-    "pytest~=8.4",
+    "pytest~=9.0",
 ]
 docs = [
     "mkdocs~=1.6",
@@ -67,6 +69,9 @@ docs = [
     "pygments~=2.19",
     "pymdown-extensions~=10.15",
 ]
+
+[tool.phosphorus.dynamic.version]
+file = "src/dj_settings/__version__.py"
 
 [tool.mypy]
 check_untyped_defs = true
@@ -136,9 +141,13 @@ forced-separate = [
 ]
 split-on-trailing-comma = false
 
-[tool.pytest.ini_options]
-addopts = "-ra -v"
-testpaths = "tests"
+[tool.pytest]
+minversion = "9.0"
+strict = true
+addopts = ["-ra", "-v"]
+testpaths = [
+    "tests",
+]
 
 [tool.coverage.run]
 branch = true
@@ -147,8 +156,8 @@ source = [
 ]
 data_file = ".cov_cache/coverage.dat"
 omit = [
-    "src/dj_settings/_seven.py",
-    "src/dj_settings/lib/type_defs.py",
+    "src/**/_seven.py",
+    "src/**/type_defs.py",
 ]
 
 [tool.coverage.report]
