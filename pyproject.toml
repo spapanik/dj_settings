@@ -1,14 +1,12 @@
 [build-system]
 requires = [
-    "phosphorus>=0.10",
+    "uv_build>=0.9.21,<0.10.0",
 ]
-build-backend = "phosphorus.construction.api"
+build-backend = "uv_build"
 
 [project]
 name = "dj_settings"
-dynamic = [
-    "version",
-]
+version = "8.0.0"
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
@@ -51,8 +49,9 @@ dev = [
     { include-group = "docs" },
 ]
 lint = [
-    "mypy~=1.18",
+    "mypy~=1.19",
     "ruff~=0.13",
+    "ty~=0.0.9",
     { include-group = "test_core" },
 ]
 test = [
@@ -69,9 +68,6 @@ docs = [
     "pygments~=2.19",
     "pymdown-extensions~=10.15",
 ]
-
-[tool.phosphorus.dynamic.version]
-file = "src/dj_settings/__version__.py"
 
 [tool.mypy]
 check_untyped_defs = true
