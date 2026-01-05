@@ -1,1 +1,3 @@
-__version__ = "8.0.0"
+from importlib.metadata import version
+
+__version__ = version("dj_settings")

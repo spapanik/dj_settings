@@ -1,14 +1,12 @@
 [build-system]
 requires = [
-    "phosphorus>=0.10",
+    "uv_build>=0.11.0,<0.12.0",
 ]
-build-backend = "phosphorus.construction.api"
+build-backend = "uv_build"
 
 [project]
 name = "dj_settings"
-dynamic = [
-    "version",
-]
+version = "8.0.0"
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
@@ -25,13 +23,12 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "License :: OSI Approved :: BSD License",
     "Intended Audience :: Developers",
 ]
 
 requires-python = ">=3.10"
 dependencies = [
-    "pyutilkit~=0.10",
+    "pyutilkit~=0.11",
     "ruamel-yaml~=0.18",
     "tomli~=2.0; python_version<'3.11'",
 ]
@@ -51,8 +48,9 @@ dev = [
     { include-group = "docs" },
 ]
 lint = [
-    "mypy~=1.18",
-    "ruff~=0.13",
+    "mypy~=1.19",
+    "ruff~=0.15",
+    "ty~=0.0.26",
     { include-group = "test_core" },
 ]
 test = [
@@ -69,9 +67,6 @@ docs = [
     "pygments~=2.19",
     "pymdown-extensions~=10.15",
 ]
-
-[tool.phosphorus.dynamic.version]
-file = "src/dj_settings/__version__.py"
 
 [tool.mypy]
 check_untyped_defs = true
