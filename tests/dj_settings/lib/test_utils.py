@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from dj_settings import utils
+from dj_settings.lib import utils
 
 if TYPE_CHECKING:
-    from dj_settings.type_defs import SupportedType
+    from dj_settings.lib.type_defs import SupportedType
 
 
 @pytest.mark.parametrize(

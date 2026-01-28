@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pyutilkit.classes import Singleton
 
-from dj_settings.exceptions import SectionError
-from dj_settings.utils import (
+from dj_settings.lib.exceptions import SectionError
+from dj_settings.lib.utils import (
     deep_merge,
     extract_data,
     get_config_paths,
@@ -21,7 +21,7 @@ from dj_settings.utils import (
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
 
-    from dj_settings.type_defs import SupportedType
+    from dj_settings.lib.type_defs import SupportedType
 
 
 T = TypeVar("T")

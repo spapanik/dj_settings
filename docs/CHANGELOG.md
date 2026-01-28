@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+- Moved helper functions to dj_settings.lib
+
 ### Removed
 
 - Dropped python 3.9 support

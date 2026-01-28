@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING, Any, cast
 
 from ruamel.yaml import YAML
 
-from dj_settings._seven import toml_parser
-from dj_settings.constants import ETC, HOME_CONF, SUPPORTED_TYPES
+from dj_settings.lib._seven import toml_parser
+from dj_settings.lib.constants import ETC, HOME_CONF, SUPPORTED_TYPES
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
-    from dj_settings.type_defs import SupportedType
+    from dj_settings.lib.type_defs import SupportedType
 
 
 def get_override_paths(path: Path, *, same_suffix: bool) -> Iterator[Path]:
