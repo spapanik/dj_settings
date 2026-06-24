@@ -1,17 +1,27 @@
 site_name: dj_settings
+site_description: Project settings the UNIX way
+site_author: Stephanos Kuma
 
 repo_url: https://github.com/spapanik/dj_settings
+repo_name: spapanik/dj_settings
 
 nav:
   - Home: README.md
-  - Installation: installation.md
-  - Usage:
-      - usage/index.md
-      - Parsers: usage/parsers.md
-      - Decorator: usage/decorator.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quick Start: usage/index.md
+  - User Guide:
+      - Configuration Parsers: usage/parsers.md
+      - Settings Classes: usage/decorator.md
+  - Reference:
+      - API Overview: usage/index.md#public-api
+      - ConfigParser: usage/parsers.md#configparser-class
+      - get_setting: usage/parsers.md#get_setting-function
+      - settings_class: usage/decorator.md#the-settings_class-decorator
+      - config_value: usage/decorator.md#the-config_value-helper
   - About:
-      - License: LICENSE.md
       - Changelog: CHANGELOG.md
+      - License: LICENSE.md
       - Code of Conduct: CODE_OF_CONDUCT.md
 
 markdown_extensions:

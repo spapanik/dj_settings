@@ -1,31 +1,78 @@
 # Installation
 
-# Using uv
+## Requirements
 
-[uv] is an extremely fast Python package installer.
-You can use it to install `dj_settings` and try it out:
+- **Python**: 3.10 or higher
+- **Dependencies**: Automatically installed (pyutilkit, ruamel-yaml, tomli for Python <3.11)
 
-```console
-$ uv pip install dj_settings
+## Installation Methods
+
+### Using uv (Recommended)
+
+[uv](https://github.com/astral-sh/uv) is an extremely fast Python package installer and resolver.
+
+```bash
+uv pip install dj_settings
 ```
 
-# Using a PEP 621 compliant build backend
+### Using pip
 
-[PEP 621] is the standard way to store your dependencies in a `pyproject.toml` file.
-You can add `dj_settings` to your `pyproject.toml` file:
+```bash
+pip install dj_settings
+```
+
+### Using Poetry
+
+```bash
+poetry add dj_settings
+```
+
+### Using PEP 621 (pyproject.toml)
+
+Add `dj_settings` to your project's dependencies in `pyproject.toml`:
 
 ```toml
 [project]
 dependencies = [
-    "dj_settings~=5.0",
-    ....
+    "dj_settings>=8.0.0",
 ]
 ```
 
-## Python Version Requirement
+Then install with your preferred tool:
 
-Please note that `dj_settings` requires Python 3.10 or higher. If you're not using uv,
-please ensure that you have such a version installed in your system.
+```bash
+# With uv
+uv sync
 
-[uv]: https://github.com/astral-sh/uv
-[PEP 621]: https://peps.python.org/pep-0621/
+# With pip
+pip install -e .
+
+# With Poetry
+poetry install
+```
+
+## Version Compatibility
+
+| dj_settings Version | Python Version | Status |
+|---------------------|----------------|--------|
+| 8.x                 | ≥3.10          | Current |
+| 7.x                 | ≥3.9           | Legacy  |
+| 6.x                 | ≥3.8           | Legacy  |
+| 5.x                 | ≥3.7           | Legacy  |
+
+For new projects, we recommend using the latest version (8.x) with Python 3.10+.
+
+## Verifying Installation
+
+After installation, verify that dj_settings is correctly installed:
+
+```python
+python -c "import dj_settings; print(dj_settings.__version__)"
+```
+
+This should print the installed version number.
+
+## Next Steps
+
+- Read the [Usage Guide](usage/index.md) to learn how to use dj_settings
+- Check out the [Quick Start](README.md#quick-start) examples in the README
