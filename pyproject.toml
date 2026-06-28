@@ -120,6 +120,7 @@ ignore = [
     "FBT001",  # Test arguments are handled by pytest
     "PLR2004", # Tests should contain magic number comparisons
     "S101",    # Pytest needs assert statements
+    "SLF001",  # Tests need to access private members for coverage
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -139,7 +140,10 @@ split-on-trailing-comma = false
 [tool.pytest]
 minversion = "9.0"
 strict = true
-addopts = ["-ra", "-v"]
+addopts = [
+    "-ra",
+    "-v",
+]
 testpaths = [
     "tests",
 ]
