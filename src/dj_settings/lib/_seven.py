@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import sys
 
-MINOR = sys.version_info.minor
-
-
-if MINOR >= 11:  # noqa: PLR2004
+if sys.version_info >= (3, 11):
     import tomllib
 
     toml_parser = tomllib.load

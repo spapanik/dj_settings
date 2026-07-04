@@ -41,7 +41,8 @@ def deep_merge(
                 continue
             current_value = output[key]
             if isinstance(current_value, dict) and isinstance(value, dict):
-                output[key] = deep_merge(current_value, value)
+                # types might be a bit of for generic usage, but it's fine for our usage
+                output[key] = deep_merge(current_value, value)  # ty: ignore[invalid-argument-type]
             elif (
                 merge_arrays
                 and isinstance(current_value, list)
@@ -109,8 +110,9 @@ def extract_data(  # type: ignore[explicit-any]
             return cast("dict[str, Any]", json.load(file))  # type: ignore[explicit-any]
 
     if settings_type == "ini":
-        parser = RawConfigParser(default_section=None)  # type: ignore[call-overload]
-        parser.optionxform = lambda option: option
+        # typing is questionable, but it's runtime safe
+        parser = RawConfigParser(default_section=None)  # type: ignore[call-overload]  # ty: ignore[invalid-argument-type]
+        parser.optionxform = lambda option: option  # ty: ignore[invalid-assignment]
         parser.read(path)
         return {key: dict(value) for key, value in parser.items() if key is not None}
 

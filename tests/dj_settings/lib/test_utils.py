@@ -95,7 +95,7 @@ def test_get_type(
 
 def test_get_unsupported_type() -> None:
     with pytest.raises(ValueError, match="is not a supported extension"):
-        utils.get_type(Path("settings.ini"), "unsupported")  # type: ignore[arg-type]
+        utils.get_type(Path("settings.ini"), "unsupported")  # type: ignore[arg-type]  # ty: ignore[invalid-argument-type]
 
 
 def test_get_non_inferrable_type() -> None:

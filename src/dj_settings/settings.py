@@ -89,7 +89,7 @@ def get_setting(
     if use_env:
         env_var = name if use_env is True else use_env
         if os.getenv(env_var) is not None:
-            return rtype(os.environ[env_var])
+            return rtype(os.environ[env_var])  # ty: ignore[invalid-argument-type]
 
     if filename is not None:
         if project_dir is not None:
@@ -103,7 +103,7 @@ def get_setting(
         except SectionError:
             pass
         else:
-            return rtype(value)
+            return rtype(value)  # ty: ignore[invalid-argument-type]
 
     if isinstance(default, _Undefined):
         msg = f"Setting {name} not found and no default value provided"
