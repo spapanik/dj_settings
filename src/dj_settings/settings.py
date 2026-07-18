@@ -83,13 +83,13 @@ def get_setting(
     filename: str | Path | None = None,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[*tuple[object, ...]], T] | type = str,
+    rtype: Callable[[object], T] | type = str,
     default: T | _Undefined = _UNDEFINED,
 ) -> T:
     if use_env:
         env_var = name if use_env is True else use_env
         if os.getenv(env_var) is not None:
-            return rtype(os.environ[env_var])  # ty: ignore[invalid-argument-type]
+            return rtype(os.environ[env_var])
 
     if filename is not None:
         if project_dir is not None:
@@ -103,7 +103,7 @@ def get_setting(
         except SectionError:
             pass
         else:
-            return rtype(value)  # ty: ignore[invalid-argument-type]
+            return rtype(value)
 
     if isinstance(default, _Undefined):
         msg = f"Setting {name} not found and no default value provided"
@@ -122,7 +122,7 @@ class _SettingsField(Generic[T]):
         use_env: bool | str,
         sections: Iterable[str],
         merge_arrays: bool,
-        rtype: Callable[[*tuple[object, ...]], T] | type = str,
+        rtype: Callable[[object], T] | type = str,
         default: T,
     ) -> None:
         self.name = name
@@ -153,7 +153,7 @@ def config_value(  # type: ignore[explicit-any]
     use_env: bool | str = True,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[*tuple[object, ...]], T] | type = str,
+    rtype: Callable[[object], T] | type = str,
     default: T | _Undefined = _UNDEFINED,
 ) -> Any:  # noqa: ANN401
     """Get a settings value from the environment or a configuration file.
