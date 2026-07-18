@@ -113,3 +113,54 @@ def test_extract_data(data_dir: Path) -> None:
 def test_extract_data_from_env(data_dir: Path) -> None:
     path = data_dir.joinpath(".env.test")
     assert utils.extract_data(path, "env") == {"VARIABLE": "value"}
+
+
+def test_extract_data_from_env_with_equal_in_value(tmp_path: Path) -> None:
+    path = tmp_path.joinpath(".env")
+    path.write_text("DATABASE_URL=postgresql://user@host/db?param=value\n")
+    assert utils.extract_data(path, "env") == {
+        "DATABASE_URL": "postgresql://user@host/db?param=value"
+    }
+
+
+def test_extract_data_from_env_with_multiple_equals(tmp_path: Path) -> None:
+    path = tmp_path.joinpath(".env")
+    path.write_text("TOKEN=eyJhbGciOiA9PQ==\n")
+    assert utils.extract_data(path, "env") == {
+        "TOKEN": "eyJhbGciOiA9PQ=="
+    }
+
+
+def test_extract_data_from_env_with_whitespace(tmp_path: Path) -> None:
+    path = tmp_path.joinpath(".env")
+    path.write_text(
+        "KEY = value\n"
+        "  KEY2  =  value2  \n"
+        "KEY3=value3\n"
+    )
+    assert utils.extract_data(path, "env") == {
+        "KEY": "value",
+        "KEY2": "value2",
+        "KEY3": "value3",
+    }
+
+
+def test_extract_data_from_yaml_list(tmp_path: Path) -> None:
+    path = tmp_path.joinpath("list.yml")
+    path.write_text("- item1\n- item2\n")
+    with pytest.raises(TypeError, match="Expected a mapping in"):
+        utils.extract_data(path, "yaml")
+
+
+def test_extract_data_from_yaml_scalar(tmp_path: Path) -> None:
+    path = tmp_path.joinpath("scalar.yml")
+    path.write_text("just a string\n")
+    with pytest.raises(TypeError, match="Expected a mapping in"):
+        utils.extract_data(path, "yaml")
+
+
+def test_extract_data_from_yaml_empty(tmp_path: Path) -> None:
+    path = tmp_path.joinpath("empty.yml")
+    path.write_text("")
+    with pytest.raises(TypeError, match="Expected a mapping in"):
+        utils.extract_data(path, "yaml")

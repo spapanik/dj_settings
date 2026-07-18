@@ -101,8 +101,8 @@ def extract_data(  # type: ignore[explicit-any]
                 line = raw_line.strip()
                 if not line or line.startswith("#"):
                     continue
-                key, value = line.split("=")
-                data[key] = value
+                key, value = line.split("=", 1)
+                data[key.strip()] = value.strip()
         return data
 
     if settings_type == "json":
@@ -122,4 +122,8 @@ def extract_data(  # type: ignore[explicit-any]
 
     yaml = YAML(typ="safe")
     with path.open() as file:
-        return cast("dict[str, Any]", yaml.load(file))  # type: ignore[explicit-any]
+        result = yaml.load(file)
+    if not isinstance(result, dict):
+        msg = f"Expected a mapping in {path}, got {type(result).__name__}"
+        raise TypeError(msg)
+    return result  # type: ignore[explicit-any]
