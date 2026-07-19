@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- **Python**: 3.10 or higher
-- **Dependencies**: Automatically installed (pyutilkit, ruamel-yaml, tomli for Python <3.11)
+- **Python**: 3.11 or higher
+- **Dependencies**: Automatically installed (pyutilkit and ruamel-yaml)
 
 ## Installation Methods
 
@@ -34,7 +34,7 @@ Add `dj_settings` to your project's dependencies in `pyproject.toml`:
 ```toml
 [project]
 dependencies = [
-    "dj_settings>=8.0.0",
+    "dj_settings>=9.0.0",
 ]
 ```
 
@@ -55,12 +55,13 @@ poetry install
 
 | dj_settings Version | Python Version | Status |
 |---------------------|----------------|--------|
-| 8.x                 | ≥3.10          | Current |
+| 9.x                 | ≥3.11          | Current |
+| 8.x                 | ≥3.9           | Legacy  |
 | 7.x                 | ≥3.9           | Legacy  |
 | 6.x                 | ≥3.8           | Legacy  |
 | 5.x                 | ≥3.7           | Legacy  |
 
-For new projects, we recommend using the latest version (8.x) with Python 3.10+.
+For new projects, we recommend using the latest version (9.x) with Python 3.11+.
 
 ## Verifying Installation
 

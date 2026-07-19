@@ -21,7 +21,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ### Removed
 
-- Dropped python 3.9 support
+- Dropped Python 3.9 and 3.10 support
+- Removed the `tomli` dependency in favour of the standard library's `tomllib`
 
 ## [8.0.0] - 2025-04-26
 

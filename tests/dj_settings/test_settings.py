@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Protocol
 import pytest
 
 from dj_settings import settings
+from dj_settings.lib.exceptions import SectionError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -119,7 +120,7 @@ class TestConfigParser:
         path = tmp_path.joinpath("scalar.yml")
         path.write_text("a: 5\n")
         parser = settings.ConfigParser([path])
-        with pytest.raises(settings.SectionError):
+        with pytest.raises(SectionError):
             parser.extract_value("b", ["a"])
 
     @staticmethod
