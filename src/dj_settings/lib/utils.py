@@ -42,7 +42,7 @@ def deep_merge(
             current_value = output[key]
             if isinstance(current_value, dict) and isinstance(value, dict):
                 # types might be a bit of for generic usage, but it's fine for our usage
-                output[key] = deep_merge(current_value, value)  # ty: ignore[invalid-argument-type]
+                output[key] = deep_merge(current_value, value, merge_arrays=merge_arrays)  # ty: ignore[invalid-argument-type]
             elif (
                 merge_arrays
                 and isinstance(current_value, list)

@@ -68,6 +68,16 @@ def test_get_override_paths(
             False,
             {"int_1": 4, "int_2": 1, "int_3": 3, "int_4": 4},
         ),
+        (
+            ({"a": {"items": [1]}}, {"a": {"items": [2]}}),
+            True,
+            {"a": {"items": [1, 2]}},
+        ),
+        (
+            ({"a": {"items": [1]}}, {"a": {"items": [2]}}),
+            False,
+            {"a": {"items": [2]}},
+        ),
     ],
 )
 def test_deep_merge(
