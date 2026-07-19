@@ -10,6 +10,15 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 - Moved helper functions to dj_settings.lib
 
+### Fixed
+
+- Fixed `.env` parser crashing on values containing `=`
+- Fixed `.env` parser not stripping whitespace from keys and values
+- Fixed `.env` parser crashing on lines without `=`
+- Fixed YAML loader silently returning non-dict values with no error
+- Fixed `deep_merge` not forwarding `merge_arrays` to recursive calls
+- Fixed traversing a section path into a scalar raising `TypeError` instead of `SectionError`
+
 ### Removed
 
 - Dropped python 3.9 support
