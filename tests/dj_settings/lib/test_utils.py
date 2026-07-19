@@ -136,18 +136,12 @@ def test_extract_data_from_env_with_equal_in_value(tmp_path: Path) -> None:
 def test_extract_data_from_env_with_multiple_equals(tmp_path: Path) -> None:
     path = tmp_path.joinpath(".env")
     path.write_text("TOKEN=eyJhbGciOiA9PQ==\n")
-    assert utils.extract_data(path, "env") == {
-        "TOKEN": "eyJhbGciOiA9PQ=="
-    }
+    assert utils.extract_data(path, "env") == {"TOKEN": "eyJhbGciOiA9PQ=="}
 
 
 def test_extract_data_from_env_with_whitespace(tmp_path: Path) -> None:
     path = tmp_path.joinpath(".env")
-    path.write_text(
-        "KEY = value\n"
-        "  KEY2  =  value2  \n"
-        "KEY3=value3\n"
-    )
+    path.write_text("KEY = value\n  KEY2  =  value2  \nKEY3=value3\n")
     assert utils.extract_data(path, "env") == {
         "KEY": "value",
         "KEY2": "value2",
@@ -174,3 +168,9 @@ def test_extract_data_from_yaml_empty(tmp_path: Path) -> None:
     path.write_text("")
     with pytest.raises(TypeError, match="Expected a mapping in"):
         utils.extract_data(path, "yaml")
+
+
+def test_extract_data_from_env_with_bare_token(tmp_path: Path) -> None:
+    path = tmp_path.joinpath(".env")
+    path.write_text("JUST_A_WORD\nKEY=value\n")
+    assert utils.extract_data(path, "env") == {"KEY": "value"}
