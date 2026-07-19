@@ -69,7 +69,7 @@ class ConfigParser:
             path.append(section)
             try:
                 data = data[section]  # type: ignore[index]
-            except (KeyError, AttributeError) as exc:
+            except (KeyError, TypeError) as exc:
                 raise SectionError(path) from exc
 
         return data

@@ -113,3 +113,24 @@ class TestConfigParser:
         read_2 = parser.data
         assert read_1 == {"foo": {"x": 100, "y": 20, "z": 3}}
         assert read_1 == read_2
+
+    @staticmethod
+    def test_extract_value_into_scalar(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("scalar.yml")
+        path.write_text("a: 5\n")
+        parser = settings.ConfigParser([path])
+        with pytest.raises(settings.SectionError):
+            parser.extract_value("b", ["a"])
+
+    @staticmethod
+    def test_get_setting_scalar_path_with_default(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("scalar.yml")
+        path.write_text("a: 5\n")
+        assert settings.get_setting("b", filename=path, sections=["a"], default=0) == 0
+
+    @staticmethod
+    def test_get_setting_scalar_path_without_default(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("scalar.yml")
+        path.write_text("a: 5\n")
+        with pytest.raises(TypeError):
+            settings.get_setting("b", filename=path, sections=["a"])
