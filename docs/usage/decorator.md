@@ -90,9 +90,9 @@ class Settings:
 The `value` attribute will be searched in this order:
 
 1. Environment variable `setting` (if `use_env=True`)
-2. `/myapp/app.yml` → section/path to `setting`
+2. `/etc/app.yml` → section/path to `setting`
 3. `~/.config/app.yml` → section/path to `setting`
-4. `/etc/app.yml` → section/path to `setting`
+4. `/myapp/app.yml` → section/path to `setting`
 5. Default value (if provided)
 
 Each `.yml` file can be overridden by its corresponding `.yml.d/` directory.

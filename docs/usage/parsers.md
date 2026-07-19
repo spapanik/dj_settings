@@ -318,8 +318,6 @@ value = get_setting("REQUIRED_SETTING")  # May raise TypeError
 
 **Raises:**
 - `TypeError`: If setting is not found and no default is provided
-- `SectionError`: If the specified sections don't exist in the config file
-- `ValueError`: If type conversion fails
 
 ### Complete Example
 
@@ -366,19 +364,31 @@ class AppConfig:
 ```python
 from dj_settings.lib.exceptions import SectionError
 
+# With a default: missing sections are silently handled
+value = get_setting(
+    "setting",
+    filename="config.yml",
+    sections=["nonexistent", "path"],
+    default=None,
+)
+# Returns None rather than raising
+
+# Without a default: missing setting raises TypeError
 try:
     value = get_setting(
         "setting",
         filename="config.yml",
         sections=["nonexistent", "path"],
-        default=None
     )
-except SectionError as e:
-    print(f"Configuration path not found: {e}")
-    # Handle missing configuration
 except TypeError as e:
     print(f"Required setting not found: {e}")
-    # Handle missing required setting
+
+# Use ConfigParser.extract_value directly if you need SectionError
+parser = ConfigParser(paths=[Path("config.yml")])
+try:
+    value = parser.extract_value("setting", ["nonexistent", "path"])
+except SectionError as e:
+    print(f"Configuration path not found: {e}")
 ```
 
 ---
@@ -388,7 +398,7 @@ except TypeError as e:
 | Feature | ConfigParser | get_setting |
 |---------|--------------|-------------|
 | Use Case | Parse entire config files | Get individual settings |
-| Fallback Chain | No (only specified files) | Yes (env → project → user → system → default) |
+| Fallback Chain | No (only specified files) | Yes (env → system → user → project → default) |
 | Environment Variables | No | Yes (optional) |
 | Multiple Files | Yes | No (single filename) |
 | Type Conversion | Manual | Built-in (`rtype`) |

@@ -7,9 +7,9 @@
 ### Read Order (Highest to Lowest Priority)
 
 1. **Environment Variables** - When `use_env` is enabled
-2. **Project Directory** - `{project_dir}/{filename}`
+2. **System Config** - `/etc/{filename}`
 3. **User Config** - `$XDG_CONFIG_HOME/{filename}` (defaults to `~/.config/`)
-4. **System Config** - `/etc/{filename}`
+4. **Project Directory** - `{project_dir}/{filename}`
 5. **Default Value** - Provided as fallback
 
 Each configuration file can be overridden by files in its `.d` directory. For example, if you have `/etc/config.yml`, any YAML files in `/etc/config.yml.d/` will be merged on top, processed in alphabetical order.
@@ -19,12 +19,12 @@ Each configuration file can be overridden by files in its `.d` directory. For ex
 ```
 Environment Variable: DATABASE_URL=postgres://prod/db
                      ↓ (overrides if use_env=True)
-Project Config: /myapp/config.yml
-                     ↓ (merged with overrides from /myapp/config.yml.d/)
-User Config: ~/.config/config.yml
-                     ↓ (merged with overrides from ~/.config/config.yml.d/)
 System Config: /etc/config.yml
                      ↓ (merged with overrides from /etc/config.yml.d/)
+User Config: ~/.config/config.yml
+                     ↓ (merged with overrides from ~/.config/config.yml.d/)
+Project Config: /myapp/config.yml
+                     ↓ (merged with overrides from /myapp/config.yml.d/)
 Default Value: "sqlite:///default.db"
 ```
 
