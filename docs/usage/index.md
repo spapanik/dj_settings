@@ -32,12 +32,12 @@ Default Value: "sqlite:///default.db"
 
 `dj_settings` provides four main components:
 
-| Component | Type | Purpose |
-|-----------|------|---------|
-| [`ConfigParser`](parsers.md#configparser-class) | Class | Parse and merge multiple configuration files |
-| [`get_setting`](parsers.md#get_setting-function) | Function | Retrieve a single setting with fallback chain |
-| [`settings_class`](decorator.md) | Decorator | Create type-safe settings classes |
-| [`config_value`](decorator.md#config_value-helper) | Helper | Define configurable attributes in settings classes |
+| Component                                          | Type      | Purpose                                            |
+| -------------------------------------------------- | --------- | -------------------------------------------------- |
+| [`ConfigParser`](parsers.md#configparser-class)    | Class     | Parse and merge multiple configuration files       |
+| [`get_setting`](parsers.md#get_setting-function)   | Function  | Retrieve a single setting with fallback chain      |
+| [`settings_class`](decorator.md)                   | Decorator | Create type-safe settings classes                  |
+| [`config_value`](decorator.md#config_value-helper) | Helper    | Define configurable attributes in settings classes |
 
 ## Supported Configuration Formats
 
@@ -64,7 +64,7 @@ debug = get_setting(
     project_dir=Path("/myapp"),
     filename="config.yml",
     sections=["app"],
-    default=False
+    default=False,
 )
 ```
 
@@ -76,11 +76,8 @@ from dj_settings import ConfigParser
 
 # Parse multiple config files
 parser = ConfigParser(
-    paths=[
-        Path("/etc/myapp.yml"),
-        Path("/myapp/config.yml")
-    ],
-    merge_arrays=True  # Merge lists instead of replacing
+    paths=[Path("/etc/myapp.yml"), Path("/myapp/config.yml")],
+    merge_arrays=True,  # Merge lists instead of replacing
 )
 
 # Access parsed data
@@ -94,11 +91,13 @@ database_url = parser.extract_value("url", ["database"])
 from pathlib import Path
 from dj_settings import config_value, settings_class
 
+
 @settings_class(project_dir=Path("/myapp"), filename="config.yml")
 class AppSettings:
     debug: bool = config_value("DEBUG", use_env=True, default=False)
     database_url: str = config_value("DATABASE_URL", sections=["db"])
     workers: int = config_value("WORKERS", rtype=int, default=4)
+
 
 settings = AppSettings()
 print(settings.debug)  # Type-safe, IDE-supported

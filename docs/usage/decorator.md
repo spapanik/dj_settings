@@ -17,6 +17,7 @@ Settings classes combine the power of Python dataclasses with dj_settings' confi
 from pathlib import Path
 from dj_settings import config_value, settings_class
 
+
 @settings_class(project_dir=Path("/myapp"), filename="config.yml")
 class AppSettings:
     # Simple setting with default
@@ -26,18 +27,17 @@ class AppSettings:
     database_url: str = config_value(
         "DATABASE_URL",
         sections=["database", "connection"],
-        default="sqlite:///db.sqlite3"
+        default="sqlite:///db.sqlite3",
     )
 
     # Setting with custom env var name
     secret_key: str = config_value(
-        "SECRET_KEY",
-        use_env="APP_SECRET_KEY",
-        default="change-me-in-production"
+        "SECRET_KEY", use_env="APP_SECRET_KEY", default="change-me-in-production"
     )
 
     # Plain attribute (not from config)
     app_name: str = "My Application"
+
 
 # Instantiate to resolve all values
 settings = AppSettings()
@@ -62,10 +62,10 @@ settings_class(
 
 ### Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `project_dir` | `Path \| str \| None` | `None` | Project directory for config file lookup |
-| `filename` | `Path \| str \| None` | `None` | Configuration filename to search for |
+| Parameter     | Type                  | Default | Description                              |
+| ------------- | --------------------- | ------- | ---------------------------------------- |
+| `project_dir` | `Path \| str \| None` | `None`  | Project directory for config file lookup |
+| `filename`    | `Path \| str \| None` | `None`  | Configuration filename to search for     |
 
 ### How It Works
 
@@ -165,10 +165,7 @@ Control array merging behavior in `.d` overrides:
 ```python
 # Merge arrays from override files
 allowed_hosts: list[str] = config_value(
-    "ALLOWED_HOSTS",
-    sections=["server"],
-    merge_arrays=True,
-    default=["localhost"]
+    "ALLOWED_HOSTS", sections=["server"], merge_arrays=True, default=["localhost"]
 )
 ```
 
@@ -185,16 +182,12 @@ timeout: float = config_value("TIMEOUT", rtype=float, default=30.0)
 
 # Boolean conversion
 debug: bool = config_value(
-    "DEBUG",
-    rtype=lambda x: str(x).lower() in ("true", "1", "yes"),
-    default=False
+    "DEBUG", rtype=lambda x: str(x).lower() in ("true", "1", "yes"), default=False
 )
 
 # List conversion
 tags: list[str] = config_value(
-    "TAGS",
-    rtype=lambda x: x.split(",") if isinstance(x, str) else x,
-    default=[]
+    "TAGS", rtype=lambda x: x.split(",") if isinstance(x, str) else x, default=[]
 )
 ```
 
@@ -222,11 +215,13 @@ Use different filenames for different settings groups:
 from pathlib import Path
 from dj_settings import config_value, settings_class
 
+
 # Database settings from db.yml
 @settings_class(project_dir=Path("/myapp"), filename="db.yml")
 class DatabaseSettings:
     url: str = config_value("URL", sections=["connection"])
     pool_size: int = config_value("POOL_SIZE", rtype=int, default=5)
+
 
 # App settings from app.yml
 @settings_class(project_dir=Path("/myapp"), filename="app.yml")
@@ -234,10 +229,12 @@ class AppSettings:
     debug: bool = config_value("DEBUG", use_env=True, default=False)
     secret_key: str = config_value("SECRET_KEY")
 
+
 # Compose them
 class Settings:
     db = DatabaseSettings()
     app = AppSettings()
+
 
 settings = Settings()
 print(settings.db.url)
@@ -253,16 +250,14 @@ Leverage environment variables for environment-specific configuration:
 class Settings:
     # Always check env var first
     environment: str = config_value(
-        "ENVIRONMENT",
-        use_env="APP_ENV",
-        default="development"
+        "ENVIRONMENT", use_env="APP_ENV", default="development"
     )
 
     # Different defaults based on environment
     debug: bool = config_value(
         "DEBUG",
         use_env=True,
-        default=False  # Production-safe default
+        default=False,  # Production-safe default
     )
 
     # Database URL from env or config
@@ -270,8 +265,9 @@ class Settings:
         "DATABASE_URL",
         use_env="DATABASE_URL",
         sections=["database"],
-        default="sqlite:///dev.db"
+        default="sqlite:///dev.db",
     )
+
 
 settings = Settings()
 
@@ -294,10 +290,12 @@ class DatabaseConfig:
     def url(self) -> str:
         return f"postgresql://{self.host}:{self.port}/{self.name}"
 
+
 @settings_class(filename="config.yml")
 class CacheConfig:
     backend: str = config_value("BACKEND", sections=["cache"], default="redis")
     ttl: int = config_value("TTL", sections=["cache"], rtype=int, default=300)
+
 
 @settings_class(filename="config.yml")
 class Settings:
@@ -308,6 +306,7 @@ class Settings:
         # Initialize nested configs
         self.database = DatabaseConfig()
         self.cache = CacheConfig()
+
 
 settings = Settings()
 print(settings.database.url)
@@ -320,6 +319,7 @@ Add validation logic to ensure configuration correctness:
 
 ```python
 from dj_settings import config_value, settings_class
+
 
 @settings_class(filename="config.yml")
 class Settings:
@@ -340,10 +340,12 @@ class Settings:
 
         if self.debug and self.workers > 1:
             import warnings
+
             warnings.warn(
                 "Running with debug=True and multiple workers. "
                 "Consider using workers=1 for debugging."
             )
+
 
 # This will raise ValueError if validation fails
 settings = Settings()
@@ -356,20 +358,16 @@ Handle optional configuration gracefully:
 ```python
 from typing import Optional
 
+
 @settings_class(filename="config.yml")
 class Settings:
     # Optional email configuration
     smtp_host: Optional[str] = config_value(
-        "SMTP_HOST",
-        sections=["email"],
-        default=None
+        "SMTP_HOST", sections=["email"], default=None
     )
 
     smtp_port: Optional[int] = config_value(
-        "SMTP_PORT",
-        sections=["email"],
-        rtype=int,
-        default=None
+        "SMTP_PORT", sections=["email"], rtype=int, default=None
     )
 
     @property
@@ -381,6 +379,7 @@ class Settings:
             raise RuntimeError("Email not configured")
         # Send email logic...
 
+
 settings = Settings()
 if settings.email_enabled:
     settings.send_email("user@example.com", "Hello", "World")
@@ -390,15 +389,15 @@ if settings.email_enabled:
 
 ## Comparison: Settings Classes vs get_setting
 
-| Feature | Settings Classes | get_setting |
-|---------|------------------|-------------|
-| Type Safety | ✅ Full IDE support | ⚠️ Manual typing |
-| Organization | ✅ Grouped in classes | ❌ Flat function calls |
-| Reusability | ✅ Instantiate multiple times | ✅ Call anywhere |
-| Validation | ✅ Via `__post_init__` | ❌ Manual validation |
-| Composition | ✅ Nest classes easily | ❌ No structure |
-| Immutability | ✅ Frozen dataclass | N/A |
-| Best For | Application-wide config | Quick one-off settings |
+| Feature      | Settings Classes              | get_setting            |
+| ------------ | ----------------------------- | ---------------------- |
+| Type Safety  | ✅ Full IDE support           | ⚠️ Manual typing       |
+| Organization | ✅ Grouped in classes         | ❌ Flat function calls |
+| Reusability  | ✅ Instantiate multiple times | ✅ Call anywhere       |
+| Validation   | ✅ Via `__post_init__`        | ❌ Manual validation   |
+| Composition  | ✅ Nest classes easily        | ❌ No structure        |
+| Immutability | ✅ Frozen dataclass           | N/A                    |
+| Best For     | Application-wide config       | Quick one-off settings |
 
 ## Best Practices
 

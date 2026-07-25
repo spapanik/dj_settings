@@ -14,10 +14,7 @@ from dj_settings import ConfigParser
 
 # Parse multiple configuration files
 parser = ConfigParser(
-    paths=[
-        Path("/etc/myapp.toml"),
-        Path("/home/user/.config/myapp.yml")
-    ]
+    paths=[Path("/etc/myapp.toml"), Path("/home/user/.config/myapp.yml")]
 )
 
 # Access the merged configuration data
@@ -30,13 +27,14 @@ print(config_data["database"]["host"])
 When you provide paths to `ConfigParser`, it processes them in order:
 
 1. For each base path (e.g., `/etc/myapp.toml`):
-   - Reads the base file if it exists and is readable
-   - Looks for a corresponding `.d` directory (e.g., `/etc/myapp.toml.d/`)
-   - Merges all matching files from the `.d` directory in **alphabetical order**
+    - Reads the base file if it exists and is readable
+    - Looks for a corresponding `.d` directory (e.g., `/etc/myapp.toml.d/`)
+    - Merges all matching files from the `.d` directory in **alphabetical order**
 
 2. Merges all configurations together, with later paths overriding earlier ones
 
 Example file processing order:
+
 ```
 /etc/myapp.toml                    # Base system config
 /etc/myapp.toml.d/01-defaults.toml # System overrides
@@ -54,11 +52,11 @@ ConfigParser(
 )
 ```
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `paths` | `Iterable[str \| Path]` | *Required* | List of configuration file paths to parse |
-| `force_type` | `SupportedType \| None` | `None` | Force a specific parser type (`"yaml"`, `"toml"`, `"json"`, `"ini"`, `"env"`) |
-| `merge_arrays` | `bool` | `False` | If `True`, concatenate arrays instead of replacing them |
+| Parameter      | Type                    | Default    | Description                                                                   |
+| -------------- | ----------------------- | ---------- | ----------------------------------------------------------------------------- |
+| `paths`        | `Iterable[str \| Path]` | _Required_ | List of configuration file paths to parse                                     |
+| `force_type`   | `SupportedType \| None` | `None`     | Force a specific parser type (`"yaml"`, `"toml"`, `"json"`, `"ini"`, `"env"`) |
+| `merge_arrays` | `bool`                  | `False`    | If `True`, concatenate arrays instead of replacing them                       |
 
 ### Properties and Methods
 
@@ -91,6 +89,7 @@ except SectionError as e:
 ```
 
 **Parameters:**
+
 - `name` (str): The final key to extract
 - `sections` (Iterable[str]): List of section names to traverse
 
@@ -106,10 +105,7 @@ Force a specific parser regardless of file extension:
 
 ```python
 # Parse a .txt file as YAML
-parser = ConfigParser(
-    paths=[Path("config.txt")],
-    force_type="yaml"
-)
+parser = ConfigParser(paths=[Path("config.txt")], force_type="yaml")
 ```
 
 #### Array Merging
@@ -157,13 +153,13 @@ debug = get_setting("DEBUG", default=False)
 # Full usage with all options
 database_url = get_setting(
     "DATABASE_URL",
-    use_env="DB_URL",              # Check DB_URL environment variable
-    project_dir=Path("/myapp"),    # Look in /myapp/config.yml
-    filename="config.yml",         # Config filename
-    sections=["database"],         # Navigate to database section
-    merge_arrays=False,            # Don't merge arrays
-    rtype=str,                     # Return type
-    default="sqlite:///db.sqlite3" # Fallback value
+    use_env="DB_URL",  # Check DB_URL environment variable
+    project_dir=Path("/myapp"),  # Look in /myapp/config.yml
+    filename="config.yml",  # Config filename
+    sections=["database"],  # Navigate to database section
+    merge_arrays=False,  # Don't merge arrays
+    rtype=str,  # Return type
+    default="sqlite:///db.sqlite3",  # Fallback value
 )
 ```
 
@@ -188,6 +184,7 @@ get_setting(
 #### `name` (Required)
 
 The name of the setting to retrieve. This serves two purposes:
+
 1. As the key name when searching in configuration files
 2. As the default environment variable name (when `use_env=True`)
 
@@ -200,11 +197,11 @@ get_setting("DATABASE_URL")
 
 Controls environment variable checking:
 
-| Value | Behavior |
-|-------|----------|
-| `True` | Check environment variable with same name as `name` |
-| `str` | Check the specified environment variable name |
-| `False` | Skip environment variable checking |
+| Value   | Behavior                                            |
+| ------- | --------------------------------------------------- |
+| `True`  | Check environment variable with same name as `name` |
+| `str`   | Check the specified environment variable name       |
+| `False` | Skip environment variable checking                  |
 
 ```python
 # Check DEBUG env var
@@ -223,11 +220,7 @@ The project directory where configuration files are located. When provided, dj_s
 
 ```python
 # Looks in /myapp/config.yml, ~/.config/config.yml, /etc/config.yml
-get_setting(
-    "setting",
-    project_dir=Path("/myapp"),
-    filename="config.yml"
-)
+get_setting("setting", project_dir=Path("/myapp"), filename="config.yml")
 ```
 
 #### `filename`
@@ -252,11 +245,7 @@ A list of section names to traverse in the configuration file to reach the setti
 #   connection:
 #     url: postgres://...
 
-get_setting(
-    "url",
-    filename="config.yml",
-    sections=["database", "connection"]
-)
+get_setting("url", filename="config.yml", sections=["database", "connection"])
 ```
 
 #### `merge_arrays`
@@ -297,6 +286,7 @@ debug = get_setting("DEBUG", rtype=lambda x: x.lower() == "true", default=False)
 
 # Custom type conversion
 from datetime import datetime
+
 created = get_setting("CREATED", rtype=datetime.fromisoformat)
 ```
 
@@ -317,6 +307,7 @@ value = get_setting("REQUIRED_SETTING")  # May raise TypeError
 **Returns:** The setting value converted to `rtype`
 
 **Raises:**
+
 - `TypeError`: If setting is not found and no default is provided
 
 ### Complete Example
@@ -324,6 +315,7 @@ value = get_setting("REQUIRED_SETTING")  # May raise TypeError
 ```python
 from pathlib import Path
 from dj_settings import get_setting
+
 
 # Application configuration
 class AppConfig:
@@ -336,7 +328,7 @@ class AppConfig:
                 project_dir=Path(__file__).parent,
                 filename="config.yml",
                 sections=["database"],
-                default="sqlite:///dev.db"
+                default="sqlite:///dev.db",
             ),
             "pool_size": get_setting(
                 "POOL_SIZE",
@@ -345,7 +337,7 @@ class AppConfig:
                 filename="config.yml",
                 sections=["database"],
                 rtype=int,
-                default=5
+                default=5,
             ),
             "debug_queries": get_setting(
                 "DEBUG_QUERIES",
@@ -354,8 +346,8 @@ class AppConfig:
                 filename="config.yml",
                 sections=["database", "options"],
                 rtype=lambda x: x.lower() in ("true", "1", "yes"),
-                default=False
-            )
+                default=False,
+            ),
         }
 ```
 
@@ -395,15 +387,15 @@ except SectionError as e:
 
 ## Comparison: ConfigParser vs get_setting
 
-| Feature | ConfigParser | get_setting |
-|---------|--------------|-------------|
-| Use Case | Parse entire config files | Get individual settings |
-| Fallback Chain | No (only specified files) | Yes (env → system → user → project → default) |
-| Environment Variables | No | Yes (optional) |
-| Multiple Files | Yes | No (single filename) |
-| Type Conversion | Manual | Built-in (`rtype`) |
-| Lazy Loading | Yes (`data` property) | No (immediate) |
-| Best For | Loading full configs | Getting specific settings |
+| Feature               | ConfigParser              | get_setting                                   |
+| --------------------- | ------------------------- | --------------------------------------------- |
+| Use Case              | Parse entire config files | Get individual settings                       |
+| Fallback Chain        | No (only specified files) | Yes (env → system → user → project → default) |
+| Environment Variables | No                        | Yes (optional)                                |
+| Multiple Files        | Yes                       | No (single filename)                          |
+| Type Conversion       | Manual                    | Built-in (`rtype`)                            |
+| Lazy Loading          | Yes (`data` property)     | No (immediate)                                |
+| Best For              | Loading full configs      | Getting specific settings                     |
 
 ## Next Steps
 

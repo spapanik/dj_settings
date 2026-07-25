@@ -53,8 +53,8 @@ poetry install
 
 ## Version Compatibility
 
-| dj_settings Version | Python Version | Status |
-|---------------------|----------------|--------|
+| dj_settings Version | Python Version | Status  |
+| ------------------- | -------------- | ------- |
 | 8.x                 | ≥3.10          | Current |
 | 7.x                 | ≥3.9           | Legacy  |
 | 6.x                 | ≥3.8           | Legacy  |

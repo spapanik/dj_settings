@@ -37,7 +37,7 @@ database_url = get_setting(
     project_dir=Path("/path/to/project"),
     filename="config.yml",
     sections=["database"],
-    default="sqlite:///db.sqlite3"
+    default="sqlite:///db.sqlite3",
 )
 ```
 
@@ -47,16 +47,15 @@ Or use type-safe settings classes:
 from pathlib import Path
 from dj_settings import config_value, settings_class
 
+
 @settings_class(project_dir=Path("/path/to/project"), filename="config.yml")
 class Settings:
     debug: bool = config_value("DEBUG", use_env=True, default=False)
     database_url: str = config_value("DATABASE_URL", sections=["database"])
     allowed_hosts: list[str] = config_value(
-        "ALLOWED_HOSTS",
-        sections=["server"],
-        merge_arrays=True,
-        default=["localhost"]
+        "ALLOWED_HOSTS", sections=["server"], merge_arrays=True, default=["localhost"]
     )
+
 
 settings = Settings()
 print(settings.debug)  # Type-safe access
@@ -66,8 +65,8 @@ print(settings.debug)  # Type-safe access
 
 - [Installation Guide](installation.md) - How to install dj_settings
 - [Usage Guide](usage/index.md) - Comprehensive usage documentation
-  - [Config Parsers](usage/parsers.md) - Using ConfigParser and get_setting
-  - [Settings Classes](usage/decorator.md) - Type-safe settings with decorators
+    - [Config Parsers](usage/parsers.md) - Using ConfigParser and get_setting
+    - [Settings Classes](usage/decorator.md) - Type-safe settings with decorators
 - [Changelog](CHANGELOG.md) - Version history and changes
 - [License](LICENSE.md) - BSD-3-Clause license
 - [Code of Conduct](CODE_OF_CONDUCT.md) - Community guidelines
@@ -101,6 +100,5 @@ Managing configuration across different environments (development, staging, prod
 [yam_url]: https://github.com/spapanik/yamk
 [ruff_badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
 [ruff_url]: https://github.com/charliermarsh/ruff
-
 [Documentation]: https://dj-settings.readthedocs.io/en/stable/
 [Changelog]: https://dj-settings.readthedocs.io/en/stable/CHANGELOG/

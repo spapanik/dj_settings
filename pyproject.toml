@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "uv_build>=0.11.0,<0.12.0",
+    "uv_build>=0.12.0,<0.13",
 ]
 build-backend = "uv_build"
 
@@ -28,9 +28,9 @@ classifiers = [
 
 requires-python = ">=3.10"
 dependencies = [
-    "pyutilkit~=0.11",
-    "ruamel-yaml~=0.18",
-    "tomli~=2.0; python_version<'3.11'",
+    "pyutilkit~=0.12",
+    "ruamel-yaml~=0.19",
+    "tomli~=2.4; python_version<'3.11'",
 ]
 
 [project.urls]
@@ -49,9 +49,9 @@ dev = [
 ]
 lint = [
     "mypy~=2.1",                          # Keep mypy for CI/CD
-    "ruff~=0.15",
-    "ty~=0.0.61",
-    "typing-extensions~=4.15",            # upgrade: py3.10: use typing module
+    "ruff~=0.16",
+    "ty~=0.0.63",
+    "typing-extensions~=4.16",            # upgrade: py3.10: use typing module
     "tomli~=2.0; python_version>='3.11'", # upgrade: py3.10: remove as unnecessary
     { include-group = "test_core" },
 ]
@@ -112,6 +112,7 @@ select = [
 ]
 ignore = [
     "C901",   # Adding a limit to complexity is too arbitrary
+    "CPY001", # Use only a project copyright
     "COM812", # Avoid conflicts with the formatter
     "D10",    # Not everything needs a docstring
     "D203",   # Prefer `no-blank-line-before-class` (D211)
