@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from inspect import get_annotations
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from pyutilkit.classes import Singleton
 
@@ -32,6 +32,12 @@ class _Undefined(metaclass=Singleton):
 
 
 _UNDEFINED = _Undefined()
+
+
+def _convert(value: object, rtype: Callable[[object], T] | type | _Undefined) -> T:
+    if isinstance(rtype, _Undefined):
+        return cast("T", value)
+    return cast("T", rtype(value))
 
 
 class ConfigParser:
@@ -83,13 +89,14 @@ def get_setting(
     filename: str | Path | None = None,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[object], T] | type = str,
+    rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
     default: T | _Undefined = _UNDEFINED,
 ) -> T:
     if use_env:
         env_var = name if use_env is True else use_env
-        if os.getenv(env_var) is not None:
-            return rtype(os.environ[env_var])
+        env_value = os.getenv(env_var)
+        if env_value is not None:
+            return _convert(env_value, rtype)
 
     if filename is not None:
         if project_dir is not None:
@@ -103,7 +110,7 @@ def get_setting(
         except SectionError:
             pass
         else:
-            return rtype(value)
+            return _convert(value, rtype)
 
     if isinstance(default, _Undefined):
         msg = f"Setting {name} not found and no default value provided"
@@ -122,7 +129,7 @@ class _SettingsField(Generic[T]):
         use_env: bool | str,
         sections: Iterable[str],
         merge_arrays: bool,
-        rtype: Callable[[object], T] | type = str,
+        rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
         default: T,
     ) -> None:
         self.name = name
@@ -153,7 +160,7 @@ def config_value(  # type: ignore[explicit-any]
     use_env: bool | str = True,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[object], T] | type = str,
+    rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
     default: T | _Undefined = _UNDEFINED,
 ) -> Any:  # noqa: ANN401
     """Get a settings value from the environment or a configuration file.

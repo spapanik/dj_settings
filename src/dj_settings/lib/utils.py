@@ -132,4 +132,4 @@ def extract_data(  # type: ignore[explicit-any]
     if not isinstance(result, dict):
         msg = f"Expected a mapping in {path}, got {type(result).__name__}"
         raise TypeError(msg)
-    return result  # type: ignore[explicit-any]
+    return result

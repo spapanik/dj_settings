@@ -112,7 +112,7 @@ config_value(
     use_env: bool | str = True,                  # Environment variable handling
     sections: Iterable[str] = (),                # Config sections to traverse
     merge_arrays: bool = False,                  # Array merging behavior
-    rtype: Callable[[object], T] | type = str,  # Return type converter
+    rtype: Callable[[object], T] | type = ...,   # Return type converter (optional)
     default: T | _Undefined = _UNDEFINED,        # Default value
 ) -> Any
 ```
@@ -171,7 +171,13 @@ allowed_hosts: list[str] = config_value(
 
 #### `rtype`
 
-Convert values to specific types:
+Convert values to specific types. If omitted, no conversion is performed and the value
+keeps the type it had in the config file — so a YAML list stays a list, and `port: 8000`
+stays an `int`. Environment variables are always strings, so an `rtype` is what turns them
+into anything else.
+
+Because nothing coerces the value to match your annotation, an `rtype` is worth setting
+whenever the setting can come from the environment:
 
 ```python
 # Integer conversion

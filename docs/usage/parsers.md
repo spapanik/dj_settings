@@ -174,7 +174,7 @@ get_setting(
     filename: str | Path | None = None,          # Config filename
     sections: Iterable[str] = (),                # Config sections to traverse
     merge_arrays: bool = False,                  # Array merging behavior
-    rtype: Callable[[object], T] | type = str,  # Return type converter
+    rtype: Callable[[object], T] | type = ...,   # Return type converter (optional)
     default: T | _Undefined = _UNDEFINED,        # Default value
 ) -> T
 ```
@@ -272,17 +272,30 @@ result = get_setting("hosts", ..., merge_arrays=True)
 
 #### `rtype`
 
-A callable to convert the retrieved value to the desired type. Defaults to `str`.
+A callable to convert the retrieved value to the desired type. If omitted, **no conversion
+is performed** and the value is returned as parsed.
+
+This matters because configuration formats are typed: a list in YAML/TOML/JSON stays a
+list, and `port: 8000` stays an `int`. Environment variables are always strings, so they
+are returned as strings unless you pass an `rtype`.
+
+Note that `rtype` is **not** applied to `default`; a default is returned exactly as you
+passed it, so pass it pre-typed.
 
 ```python
+# No rtype: values keep the type they had in the config file
+hosts = get_setting("hosts", filename="config.yml", sections=["server"])
+# ["localhost", "example.com"] — a list, not a string
+
 # Convert to integer
 port = get_setting("PORT", rtype=int, default=8000)
 
 # Convert to float
 timeout = get_setting("TIMEOUT", rtype=float, default=30.5)
 
-# Convert to boolean
-debug = get_setting("DEBUG", rtype=lambda x: x.lower() == "true", default=False)
+# Convert to boolean. Coerce to str first: the value may already be a bool if it
+# came from a config file, or a string if it came from the environment.
+debug = get_setting("DEBUG", rtype=lambda x: str(x).lower() == "true", default=False)
 
 # Custom type conversion
 from datetime import datetime

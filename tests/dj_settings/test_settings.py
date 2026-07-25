@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Protocol
 import pytest
 
 from dj_settings import settings
+from dj_settings.lib.exceptions import SectionError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -119,7 +120,7 @@ class TestConfigParser:
         path = tmp_path.joinpath("scalar.yml")
         path.write_text("a: 5\n")
         parser = settings.ConfigParser([path])
-        with pytest.raises(settings.SectionError):
+        with pytest.raises(SectionError):
             parser.extract_value("b", ["a"])
 
     @staticmethod
@@ -134,3 +135,40 @@ class TestConfigParser:
         path.write_text("a: 5\n")
         with pytest.raises(TypeError):
             settings.get_setting("b", filename=path, sections=["a"])
+
+
+class TestRType:
+    @staticmethod
+    def test_list_is_not_stringified(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("config.yml")
+        path.write_text("server:\n  hosts:\n    - localhost\n    - example.com\n")
+        value: list[str] = settings.get_setting(
+            "hosts", use_env=False, filename=path, sections=["server"]
+        )
+        assert value == ["localhost", "example.com"]
+
+    @staticmethod
+    def test_scalar_keeps_parsed_type(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("config.yml")
+        path.write_text("port: 8000\ndebug: true\n")
+        assert settings.get_setting("port", use_env=False, filename=path) == 8000
+        assert settings.get_setting("debug", use_env=False, filename=path) is True
+
+    @staticmethod
+    def test_rtype_converts_file_value(tmp_path: Path) -> None:
+        path = tmp_path.joinpath("config.yml")
+        path.write_text("port: 8000\n")
+        value: str = settings.get_setting(
+            "port", use_env=False, filename=path, rtype=str
+        )
+        assert value == "8000"
+
+    @staticmethod
+    def test_rtype_converts_env_value() -> None:
+        os.environ["PORT"] = "8000"
+        assert settings.get_setting("PORT", rtype=int) == 8000
+
+    @staticmethod
+    def test_env_value_stays_a_string_without_rtype() -> None:
+        os.environ["PORT"] = "8000"
+        assert settings.get_setting("PORT") == "8000"

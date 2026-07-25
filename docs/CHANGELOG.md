@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Changed
 
 - Moved helper functions to dj_settings.lib
+- `rtype` now defaults to no conversion, instead of `str`
 
 ### Fixed
 
