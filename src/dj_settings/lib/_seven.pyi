@@ -1,3 +1,0 @@
-from typing import BinaryIO
-
-def toml_parser(file: BinaryIO) -> dict[str, object]: ...

@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Removed
 
 - Dropped python 3.9 support
+- Dropped python 3.10 support
 
 ## [8.0.0] - 2025-04-26
 

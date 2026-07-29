@@ -3,11 +3,11 @@ from __future__ import annotations
 import json
 import os
 from configparser import RawConfigParser
+from tomllib import load as toml_load
 from typing import TYPE_CHECKING, Any, cast
 
 from ruamel.yaml import YAML
 
-from dj_settings.lib._seven import toml_parser
 from dj_settings.lib.constants import ETC, HOME_CONF, SUPPORTED_TYPES
 
 if TYPE_CHECKING:
@@ -124,7 +124,7 @@ def extract_data(  # type: ignore[explicit-any]
 
     if settings_type == "toml":
         with path.open("rb") as binary_file:
-            return toml_parser(binary_file)
+            return toml_load(binary_file)
 
     yaml = YAML(typ="safe")
     with path.open() as file:

@@ -193,6 +193,6 @@ def settings_class(
 ) -> Callable[[type], type]:
     def wrap(cls: type) -> type:
         cls = _preprocess_class(cls, project_dir, filename)
-        return dataclass(frozen=True)(cls)
+        return dataclass(frozen=True, slots=True)(cls)
 
     return wrap
