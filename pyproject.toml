@@ -6,7 +6,7 @@ build-backend = "uv_build"
 
 [project]
 name = "dj_settings"
-version = "8.0.0"
+version = "9.0.0"
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },

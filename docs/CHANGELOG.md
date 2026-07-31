@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-07-31
+
 ### Added
 
 - Added a `cli_value` layer to `get_setting`, which outranks every other source
@@ -203,7 +205,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
-[Unreleased]: https://github.com/spapanik/dj_settings/compare/v8.0.0...main
+[Unreleased]: https://github.com/spapanik/dj_settings/compare/v9.0.0...main
+[9.0.0]: https://github.com/spapanik/dj_settings/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/spapanik/dj_settings/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/spapanik/dj_settings/compare/v6.0.0...v7.0.0
 [6.0.0]: https://github.com/spapanik/dj_settings/compare/v5.0.0...v6.0.0
