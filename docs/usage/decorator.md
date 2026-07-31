@@ -1,36 +1,40 @@
 # Settings Classes
 
-Settings classes provide a type-safe, object-oriented approach to configuration management. By using the `@settings_class` decorator and `config_value` helper, you can define configuration schemas with full IDE support, type checking, and automatic value resolution.
+Settings classes provide a type-safe, object-oriented approach to configuration
+management. By using the `@settings_class` decorator and `config_value` helper, you can
+define configuration schemas with full IDE support, type checking, and automatic value
+resolution.
 
 ## Overview
 
-Settings classes combine the power of Python dataclasses with dj_settings' configuration resolution, giving you:
+Settings classes combine the power of Python dataclasses with dj_settings' configuration
+resolution, giving you:
 
 - **Type Safety**: Full type annotations with IDE autocomplete and static analysis support
 - **Immutability**: Frozen dataclasses prevent accidental modification
-- **Automatic Resolution**: Values are fetched from config files and environment variables at instantiation
-- **Clean API**: Access settings as object attributes instead of string keys
+- **One document**: N fields cost one document, shared by every field
+- **Resolution at instantiation**: values are fetched when the class is instantiated, not
+  when the module is imported
 
 ## Basic Usage
 
 ```python
-from pathlib import Path
 from dj_settings import config_value, settings_class
 
 
-@settings_class(project_dir=Path("/myapp"), filename="config.yml")
+@settings_class("/myapp/config.yml")
 class AppSettings:
     # Simple setting with default
-    debug: bool = config_value("DEBUG", use_env=True, default=False)
+    debug: bool = config_value("DEBUG", default=False)
 
     # Setting from nested config section
     database_url: str = config_value(
-        "DATABASE_URL",
+        "url",
         sections=["database", "connection"],
         default="sqlite:///db.sqlite3",
     )
 
-    # Setting with custom env var name
+    # Setting with an explicit env var name
     secret_key: str = config_value(
         "SECRET_KEY", use_env="APP_SECRET_KEY", default="change-me-in-production"
     )
@@ -49,50 +53,55 @@ if settings.debug:
 
 ## The @settings_class Decorator
 
-The `@settings_class` decorator transforms a regular class into a frozen dataclass that automatically resolves configuration values during initialization.
+The `@settings_class` decorator transforms a regular class into a frozen dataclass whose
+fields resolve their configuration values during initialization.
 
 ### Signature
 
 ```python
 settings_class(
-    project_dir: Path | str | None = None,
-    filename: Path | str | None = None
+    *paths: str | Path,
+    force_type: SupportedType | None = None,
+    dir_namespace: str = "",
+    merge_arrays: bool = False,
 ) -> Callable[[type], type]
 ```
 
-### Parameters
-
-| Parameter     | Type                  | Default | Description                              |
-| ------------- | --------------------- | ------- | ---------------------------------------- |
-| `project_dir` | `Path \| str \| None` | `None`  | Project directory for config file lookup |
-| `filename`    | `Path \| str \| None` | `None`  | Configuration filename to search for     |
+The parameters are exactly those of [`ConfigParser`](parsers.md#constructor-parameters):
+the decorator builds one parser, and every `config_value` field shares its document.
 
 ### How It Works
 
-When you instantiate a settings class, the decorator:
+1. The decorator builds a `ConfigParser` from its arguments
+2. Every attribute assigned via `config_value()` becomes a dataclass field whose
+   `default_factory` resolves the value through that parser
+3. The class is converted to a frozen dataclass
 
-1. Scans all class attributes annotated with types
-2. Identifies attributes assigned via `config_value()`
-3. Resolves each `config_value` by calling `get_setting()` with the specified parameters
-4. Replaces `config_value` objects with their resolved values
-5. Converts the class to a frozen dataclass
+Because resolution happens at instantiation:
+
+- A missing required setting raises when the class is **instantiated**, rather than
+  part-way through importing the module
+- Environment changes between instantiations are visible, so tests can monkeypatch
+  without reimporting
+- A field can still be overridden by passing it to the constructor - which is also how a
+  parsed CLI argument reaches the decorator path: `Settings(**overrides)`
 
 ### Example Config File Lookup
 
 For a settings class defined as:
 
 ```python
-@settings_class(project_dir=Path("/myapp"), filename="app.yml")
+@settings_class("/myapp/app.yml")
 class Settings:
     value: str = config_value("setting")
 ```
 
 The `value` attribute will be searched in this order:
 
-1. Environment variable `setting` (if `use_env=True`)
-2. `/etc/app.yml` → section/path to `setting`
-3. `~/.config/app.yml` → section/path to `setting`
-4. `/myapp/app.yml` → section/path to `setting`
+1. Environment variable `SETTING` (derived; `use_env=True` is the default)
+2. `/myapp/app.yml` → `setting`
+3. `~/.config/app.yml` → `setting`
+4. `/etc/app.yml` → `setting`
 5. Default value (if provided)
 
 Each `.yml` file can be overridden by its corresponding `.yml.d/` directory.
@@ -101,45 +110,46 @@ Each `.yml` file can be overridden by its corresponding `.yml.d/` directory.
 
 ## The config_value Helper
 
-The `config_value()` function defines how a specific attribute should be resolved from configuration sources.
+The `config_value()` function records how one field is resolved. It is `get_setting`
+minus `self`: the field records everything the parser does not already own.
 
 ### Signature
 
 ```python
 config_value(
-    name: str,                                    # Required: setting name
+    name: str,                                           # Required: setting name
     *,
-    use_env: bool | str = True,                  # Environment variable handling
-    sections: Iterable[str] = (),                # Config sections to traverse
-    merge_arrays: bool = False,                  # Array merging behavior
-    rtype: Callable[[object], T] | type = ...,   # Return type converter (optional)
-    default: T | Sentinel = UNDEFINED,        # Default value
+    cli_value: T | Sentinel = UNDEFINED,                 # Parsed CLI argument, if any
+    use_env: bool | str = True,                          # Environment variable handling
+    sections: Iterable[str] = (),                        # Config sections to traverse
+    env_namespace: str | Sentinel = UNDEFINED,           # Derived-name prefix
+    rtype: Callable[[object], T] | type | Sentinel = UNDEFINED,  # Coercion (optional)
+    default: T | Sentinel = UNDEFINED,                   # Default value
+    validator: Callable[[object], None] | None = None,   # Contract check (optional)
 ) -> Any
 ```
 
-### Parameters
-
-All parameters are identical to [`get_setting`](parsers.md#get_setting-function), as `config_value` internally uses `get_setting` to resolve values.
+All parameters behave exactly as in
+[`get_setting`](parsers.md#the-get_setting-method). Note that `merge_arrays` is **not** a
+`config_value` parameter: it belongs to the document, so it is passed to
+`@settings_class` instead.
 
 #### `name` (Required)
 
-The key name to search for in configuration files.
-
-```python
-# Looks for "DATABASE_URL" in config
-database_url: str = config_value("DATABASE_URL")
-```
+The key name to search for in configuration files, and the final component of the
+derived environment variable name.
 
 #### `use_env`
 
-Controls environment variable checking:
-
 ```python
-# Check env var with same name
-debug: bool = config_value("DEBUG", use_env=True)
+# Derive the variable name (sections + key, uppercased, joined with __)
+debug: bool = config_value("debug")
 
-# Check custom env var name
+# Read a custom variable, verbatim
 api_key: str = config_value("API_KEY", use_env="MY_API_KEY")
+
+# Prefix a custom variable; reads DJANGO__USER
+username: str = config_value("username", use_env="USER", env_namespace="DJANGO")
 
 # Disable env var checking
 internal_flag: bool = config_value("FLAG", use_env=False)
@@ -147,7 +157,8 @@ internal_flag: bool = config_value("FLAG", use_env=False)
 
 #### `sections`
 
-Navigate through nested configuration structures:
+Navigate through nested configuration structures. Sections also participate in the
+derived environment variable name.
 
 ```python
 # For YAML like:
@@ -156,25 +167,30 @@ Navigate through nested configuration structures:
 #     host: localhost
 
 host: str = config_value("host", sections=["database", "primary"])
+# environment: DATABASE__PRIMARY__HOST
 ```
 
-#### `merge_arrays`
+#### `env_namespace`
 
-Control array merging behavior in `.d` overrides:
+Prefix the derived variable name, to keep every setting of an application under one
+namespace:
 
 ```python
-# Merge arrays from override files
-allowed_hosts: list[str] = config_value(
-    "ALLOWED_HOSTS", sections=["server"], merge_arrays=True, default=["localhost"]
+theme: str = config_value("theme", env_namespace="NEON_SSG", default="dark")
+# environment: NEON_SSG__THEME
+
+username: str = config_value(
+    "username", sections=["database"], use_env="USER", env_namespace="DJANGO"
 )
+# environment: DJANGO__USER (sections and name do not participate)
 ```
 
 #### `rtype`
 
-Convert values to specific types. If omitted, no conversion is performed and the value
-keeps the type it had in the config file — so a YAML list stays a list, and `port: 8000`
-stays an `int`. Environment variables are always strings, so an `rtype` is what turns them
-into anything else.
+Coerce values to specific types. If omitted, no conversion is performed and the value
+keeps the type it had in the config file - so a YAML list stays a list, and `port: 8000`
+stays an `int`. Environment variables are always strings, so an `rtype` is what turns
+them into anything else.
 
 Because nothing coerces the value to match your annotation, an `rtype` is worth setting
 whenever the setting can come from the environment:
@@ -183,30 +199,37 @@ whenever the setting can come from the environment:
 # Integer conversion
 port: int = config_value("PORT", rtype=int, default=8000)
 
-# Float conversion
-timeout: float = config_value("TIMEOUT", rtype=float, default=30.0)
-
 # Boolean conversion
 debug: bool = config_value(
     "DEBUG", rtype=lambda x: str(x).lower() in ("true", "1", "yes"), default=False
-)
-
-# List conversion
-tags: list[str] = config_value(
-    "TAGS", rtype=lambda x: x.split(",") if isinstance(x, str) else x, default=[]
 )
 ```
 
 #### `default`
 
-Fallback value if the setting is not found:
+Fallback value if the setting is not found. Returned as-is: never coerced, never
+validated.
 
 ```python
 # With default
 cache_ttl: int = config_value("CACHE_TTL", rtype=int, default=300)
 
-# Without default (raises TypeError if missing)
+# Without default (raises SettingNotFoundError at instantiation if missing)
 required_secret: str = config_value("REQUIRED_SECRET")
+```
+
+#### `validator`
+
+A callable that receives the coerced value and only raises:
+
+```python
+def positive(value: object) -> None:
+    if not isinstance(value, int) or value <= 0:
+        msg = f"{value} is not a positive integer"
+        raise ValueError(msg)
+
+
+workers: int = config_value("workers", rtype=int, default=4, validator=positive)
 ```
 
 ---
@@ -215,61 +238,62 @@ required_secret: str = config_value("REQUIRED_SECRET")
 
 ### Multiple Configuration Files
 
-Use different filenames for different settings groups:
+Use different stems for different settings groups:
 
 ```python
-from pathlib import Path
 from dj_settings import config_value, settings_class
 
 
 # Database settings from db.yml
-@settings_class(project_dir=Path("/myapp"), filename="db.yml")
+@settings_class("/myapp/db.yml")
 class DatabaseSettings:
-    url: str = config_value("URL", sections=["connection"])
-    pool_size: int = config_value("POOL_SIZE", rtype=int, default=5)
+    url: str = config_value("url", sections=["connection"])
+    pool_size: int = config_value("pool_size", rtype=int, default=5)
 
 
 # App settings from app.yml
-@settings_class(project_dir=Path("/myapp"), filename="app.yml")
+@settings_class("/myapp/app.yml")
 class AppSettings:
-    debug: bool = config_value("DEBUG", use_env=True, default=False)
-    secret_key: str = config_value("SECRET_KEY")
+    debug: bool = config_value("debug", default=False)
+    secret_key: str = config_value("secret_key")
 
 
 # Compose them
 class Settings:
     db = DatabaseSettings()
     app = AppSettings()
+```
 
+### Overriding Fields at Instantiation
 
-settings = Settings()
-print(settings.db.url)
-print(settings.app.debug)
+Every `config_value` field is an ordinary dataclass field, so a caller can override it -
+this is how parsed CLI arguments reach a settings class:
+
+```python
+overrides = {}
+if args.port is not None:
+    overrides["port"] = args.port
+
+settings = AppSettings(**overrides)
 ```
 
 ### Environment-Specific Settings
 
-Leverage environment variables for environment-specific configuration:
-
 ```python
-@settings_class(filename="config.yml")
+@settings_class("config.yml")
 class Settings:
-    # Always check env var first
     environment: str = config_value(
-        "ENVIRONMENT", use_env="APP_ENV", default="development"
+        "environment", use_env="APP_ENV", default="development"
     )
 
-    # Different defaults based on environment
     debug: bool = config_value(
-        "DEBUG",
-        use_env=True,
+        "debug",
+        rtype=lambda x: str(x).lower() == "true",
         default=False,  # Production-safe default
     )
 
-    # Database URL from env or config
     database_url: str = config_value(
-        "DATABASE_URL",
-        use_env="DATABASE_URL",
+        "url",
         sections=["database"],
         default="sqlite:///dev.db",
     )
@@ -277,142 +301,61 @@ class Settings:
 
 settings = Settings()
 
-# In production: export APP_ENV=production DATABASE_URL=postgres://...
+# In production: export APP_ENV=production DATABASE__URL=postgres://...
 # In development: use config file defaults
-```
-
-### Nested Configuration Objects
-
-Create hierarchical settings structures:
-
-```python
-@settings_class(filename="config.yml")
-class DatabaseConfig:
-    host: str = config_value("HOST", sections=["database"], default="localhost")
-    port: int = config_value("PORT", sections=["database"], rtype=int, default=5432)
-    name: str = config_value("NAME", sections=["database"], default="myapp")
-
-    @property
-    def url(self) -> str:
-        return f"postgresql://{self.host}:{self.port}/{self.name}"
-
-
-@settings_class(filename="config.yml")
-class CacheConfig:
-    backend: str = config_value("BACKEND", sections=["cache"], default="redis")
-    ttl: int = config_value("TTL", sections=["cache"], rtype=int, default=300)
-
-
-@settings_class(filename="config.yml")
-class Settings:
-    database: DatabaseConfig = None  # Will be set manually
-    cache: CacheConfig = None
-
-    def __post_init__(self):
-        # Initialize nested configs
-        self.database = DatabaseConfig()
-        self.cache = CacheConfig()
-
-
-settings = Settings()
-print(settings.database.url)
-print(settings.cache.backend)
 ```
 
 ### Validation and Post-Processing
 
-Add validation logic to ensure configuration correctness:
+Per-field contracts belong in `validator`; cross-field validation belongs in
+`__post_init__`:
 
 ```python
 from dj_settings import config_value, settings_class
 
 
-@settings_class(filename="config.yml")
+@settings_class("config.yml")
 class Settings:
-    debug: bool = config_value("DEBUG", use_env=True, default=False)
-    workers: int = config_value("WORKERS", rtype=int, default=4)
-    max_connections: int = config_value("MAX_CONNECTIONS", rtype=int, default=100)
+    workers: int = config_value("workers", rtype=int, default=4)
+    max_connections: int = config_value("max_connections", rtype=int, default=100)
 
     def __post_init__(self):
-        """Validate settings after initialization."""
-        if self.workers < 1:
-            raise ValueError("Workers must be at least 1")
-
         if self.workers > self.max_connections:
             raise ValueError(
                 f"Workers ({self.workers}) cannot exceed "
                 f"max_connections ({self.max_connections})"
             )
-
-        if self.debug and self.workers > 1:
-            import warnings
-
-            warnings.warn(
-                "Running with debug=True and multiple workers. "
-                "Consider using workers=1 for debugging."
-            )
-
-
-# This will raise ValueError if validation fails
-settings = Settings()
 ```
 
 ### Optional Settings with None Defaults
 
-Handle optional configuration gracefully:
+A default is never coerced, which is what allows `None` as a default for an
+otherwise-typed setting:
 
 ```python
-from typing import Optional
-
-
-@settings_class(filename="config.yml")
+@settings_class("config.yml")
 class Settings:
-    # Optional email configuration
-    smtp_host: Optional[str] = config_value(
-        "SMTP_HOST", sections=["email"], default=None
-    )
-
-    smtp_port: Optional[int] = config_value(
-        "SMTP_PORT", sections=["email"], rtype=int, default=None
+    smtp_host: str | None = config_value("host", sections=["email"], default=None)
+    smtp_port: int | None = config_value(
+        "port", sections=["email"], rtype=int, default=None
     )
 
     @property
     def email_enabled(self) -> bool:
         return self.smtp_host is not None
-
-    def send_email(self, to: str, subject: str, body: str):
-        if not self.email_enabled:
-            raise RuntimeError("Email not configured")
-        # Send email logic...
-
-
-settings = Settings()
-if settings.email_enabled:
-    settings.send_email("user@example.com", "Hello", "World")
 ```
 
 ---
 
-## Comparison: Settings Classes vs get_setting
-
-| Feature      | Settings Classes              | get_setting            |
-| ------------ | ----------------------------- | ---------------------- |
-| Type Safety  | ✅ Full IDE support           | ⚠️ Manual typing       |
-| Organization | ✅ Grouped in classes         | ❌ Flat function calls |
-| Reusability  | ✅ Instantiate multiple times | ✅ Call anywhere       |
-| Validation   | ✅ Via `__post_init__`        | ❌ Manual validation   |
-| Composition  | ✅ Nest classes easily        | ❌ No structure        |
-| Immutability | ✅ Frozen dataclass           | N/A                    |
-| Best For     | Application-wide config       | Quick one-off settings |
-
 ## Best Practices
 
 1. **Use Type Annotations**: Always annotate your settings attributes for better IDE support
-2. **Provide Defaults**: Set sensible defaults to avoid runtime errors
+2. **Provide Defaults**: Ship a complete default configuration - it is also what makes
+   every setting environment-overridable
 3. **Group Related Settings**: Use separate classes for different configuration domains
-4. **Validate Early**: Use `__post_init__` to catch configuration errors at startup
-5. **Document Complex Settings**: Add docstrings to explain non-obvious configuration options
-6. **Use Environment Variables for Secrets**: Never hardcode sensitive values; always use `use_env`
+4. **Instantiate at startup**: A missing required setting raises at instantiation, so
+   instantiate early to catch configuration errors at startup
+5. **Use Environment Variables for Secrets**: Never hardcode sensitive values
 
 ## Common Pitfalls
 

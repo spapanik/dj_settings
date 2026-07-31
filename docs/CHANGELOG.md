@@ -6,10 +6,42 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+- Added a `cli_value` layer to `get_setting`, which outranks every other source
+- Added a `validator` parameter to `get_setting` and `config_value`
+- Added an `env_namespace` parameter to `get_setting` and `config_value`
+- Added a `dir_namespace` parameter to `ConfigParser` and `settings_class`, which
+  relocates the user and system tier search to `<tier>/<dir_namespace>/<basename>`
+
 ### Changed
 
 - Moved helper functions to dj_settings.lib
 - `rtype` now defaults to no conversion, instead of `str`
+- Inverted the tier order: the project value now wins over the user value, which wins
+  over the system value. This is a silent behaviour change: affected applications will
+  not error, they will quietly read different values
+- Every path given to `ConfigParser` and `settings_class` is now a stem: it expands
+  into the project location as given, plus the user (`$XDG_CONFIG_HOME`) and system
+  (`/etc`) tiers derived from its basename, each with its `.d` directory
+- `ConfigParser` now takes its paths as positional arguments
+- `ConfigParser.get_setting` is now the only value accessor, and applies the full
+  hierarchy: CLI value, environment, files, default
+- Derived environment variable names now include `env_namespace` and the sections,
+  uppercased and joined with `__`
+- `@settings_class` now resolves values at instantiation instead of at decoration,
+  and shares one document across all fields
+- Files are read once per parser; the environment is read on every resolution
+
+### Removed
+
+- Removed the module-level `get_setting` function (use `ConfigParser.get_setting`)
+- Removed `ConfigParser.extract_value`
+- Removed `SectionError` (replaced by `SettingNotFoundError`, which reports the
+  section path and the layers consulted)
+- Removed the `project_dir` and `filename` parameters
+- Dropped python 3.9 support
+- Dropped python 3.10 support
 
 ### Fixed
 
@@ -19,11 +51,6 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - Fixed YAML loader silently returning non-dict values with no error
 - Fixed `deep_merge` not forwarding `merge_arrays` to recursive calls
 - Fixed traversing a section path into a scalar raising `TypeError` instead of `SectionError`
-
-### Removed
-
-- Dropped python 3.9 support
-- Dropped python 3.10 support
 
 ## [8.0.0] - 2025-04-26
 

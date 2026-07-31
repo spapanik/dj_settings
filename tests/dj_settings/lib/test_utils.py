@@ -40,6 +40,17 @@ def test_get_override_paths(
     )
 
 
+@pytest.mark.parametrize("dir_namespace", ["", "tool"])
+def test_expand_stem(tiers: tuple[Path, Path], dir_namespace: str) -> None:
+    etc, xdg = tiers
+    stem = Path("/app/subdir/configuration.yaml")
+    assert list(utils.expand_stem(stem, dir_namespace)) == [
+        etc.joinpath(dir_namespace, "configuration.yaml"),
+        xdg.joinpath(dir_namespace, "configuration.yaml"),
+        stem,
+    ]
+
+
 @pytest.mark.parametrize(
     ("dictionaries", "merge_arrays", "expected"),
     [

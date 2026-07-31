@@ -1,165 +1,116 @@
 # Configuration Parsers
 
-This guide covers the two primary ways to retrieve configuration values: the `ConfigParser` class for parsing entire configuration files, and the `get_setting` function for retrieving individual settings with fallback chains.
+`ConfigParser` owns both halves of the pipeline: it _is_ the merged document, and its
+`get_setting` method is one resolution over it. This guide covers both.
 
 ## ConfigParser Class
 
-The `ConfigParser` class parses and merges multiple configuration files, automatically handling `.d` directory overrides.
+The `ConfigParser` class merges the file tiers of every stem it is given into one
+document, automatically handling `.d` directory overrides.
 
 ### Basic Usage
 
 ```python
-from pathlib import Path
 from dj_settings import ConfigParser
 
-# Parse multiple configuration files
-parser = ConfigParser(
-    paths=[Path("/etc/myapp.toml"), Path("/home/user/.config/myapp.yml")]
-)
+parser = ConfigParser("/myapp/config.yml")
 
 # Access the merged configuration data
 config_data = parser.data
 print(config_data["database"]["host"])
+
+# Resolve one value through the full hierarchy
+host = parser.get_setting("host", sections=["database"], default="localhost")
 ```
 
 ### How It Works
 
-When you provide paths to `ConfigParser`, it processes them in order:
+Every path is a **stem**. For each stem, `ConfigParser` reads three tiers, later ones
+winning:
 
-1. For each base path (e.g., `/etc/myapp.toml`):
-    - Reads the base file if it exists and is readable
-    - Looks for a corresponding `.d` directory (e.g., `/etc/myapp.toml.d/`)
-    - Merges all matching files from the `.d` directory in **alphabetical order**
+1. System: `/etc/<basename>`, plus `/etc/<basename>.d/*`
+2. User: `$XDG_CONFIG_HOME/<basename>` (defaults to `~/.config`), plus its `.d/*`
+3. Project: the stem exactly as given, plus its `.d/*`
 
-2. Merges all configurations together, with later paths overriding earlier ones
+Missing files are simply skipped. With more than one stem, merging is stem-major: the
+first stem's tiers in full, then the second stem's, and so on, later winning.
 
-Example file processing order:
+Example file processing order for `ConfigParser("/myapp/config.yml")`:
 
 ```
-/etc/myapp.toml                    # Base system config
-/etc/myapp.toml.d/01-defaults.toml # System overrides
-~/.config/myapp.yml                # User config
-~/.config/myapp.yml.d/custom.yml   # User overrides
+/etc/config.yml                    # System tier
+/etc/config.yml.d/01-defaults.yml  # System overrides
+~/.config/config.yml               # User tier
+~/.config/config.yml.d/custom.yml  # User overrides
+/myapp/config.yml                  # Project tier (wins)
 ```
+
+The document is built once per parser, lazily, on first access, and every `get_setting`
+call on that parser reuses it. A caller who needs to pick up changed files constructs a
+new parser.
 
 ### Constructor Parameters
 
 ```python
 ConfigParser(
-    paths: Iterable[str | Path],      # Required: paths to config files
+    *paths: str | Path,                       # Stems, each expanding into its tier set
     force_type: SupportedType | None = None,  # Optional: force file type
-    merge_arrays: bool = False        # Optional: merge lists instead of replacing
+    dir_namespace: str = "",                  # Optional: user/system tier subdirectory
+    merge_arrays: bool = False,               # Optional: merge lists instead of replacing
 )
 ```
 
-| Parameter      | Type                    | Default    | Description                                                                   |
-| -------------- | ----------------------- | ---------- | ----------------------------------------------------------------------------- |
-| `paths`        | `Iterable[str \| Path]` | _Required_ | List of configuration file paths to parse                                     |
-| `force_type`   | `SupportedType \| None` | `None`     | Force a specific parser type (`"yaml"`, `"toml"`, `"json"`, `"ini"`, `"env"`) |
-| `merge_arrays` | `bool`                  | `False`    | If `True`, concatenate arrays instead of replacing them                       |
+| Parameter       | Type                    | Default | Description                                                                   |
+| --------------- | ----------------------- | ------- | ----------------------------------------------------------------------------- |
+| `*paths`        | `str \| Path`           | `()`    | Configuration stems; each expands into project, user, and system tiers        |
+| `force_type`    | `SupportedType \| None` | `None`  | Force a specific parser type (`"yaml"`, `"toml"`, `"json"`, `"ini"`, `"env"`) |
+| `dir_namespace` | `str`                   | `""`    | Resolve the user and system tiers under `<tier>/<dir_namespace>/<basename>`   |
+| `merge_arrays`  | `bool`                  | `False` | If `True`, concatenate arrays instead of replacing them                       |
 
-### Properties and Methods
+These parameters select or combine files, so they belong to the document: all of them are
+constructor-only, which is what makes the document shareable across every key a caller
+reads.
 
-#### `data` Property
+With `dir_namespace` set, the flat file at the user and system tiers is **not** also
+consulted; extension still happens through the ordinary `.d` mechanism
+(`<tier>/<dir_namespace>/<basename>.d/*`). The project location is given by the stem
+itself, so `dir_namespace` does not affect it.
 
-Returns the fully merged configuration as a dictionary. The parsing happens lazily on first access.
+### The `data` Property
+
+Returns the merged file layers as a dictionary - and nothing else: the environment is
+never merged into it. Reading a merged configuration without asking for one specific
+value is a legitimate use on its own.
 
 ```python
-parser = ConfigParser(paths=[Path("config.yml")])
-config = parser.data  # Triggers parsing
+parser = ConfigParser("config.yml")
+config = parser.data  # Triggers parsing on first access
 print(config["app"]["name"])
 ```
 
-#### `extract_value` Method
+## The `get_setting` Method
 
-Extracts a specific value from the parsed configuration by navigating through sections.
-
-```python
-parser = ConfigParser(paths=[Path("config.yml")])
-
-# Extract value from nested structure
-# For config like: { "database": { "connection": { "url": "..." } } }
-db_url = parser.extract_value("url", ["database", "connection"])
-
-# Raises SectionError if path doesn't exist
-try:
-    value = parser.extract_value("missing", ["nonexistent", "path"])
-except SectionError as e:
-    print(f"Path not found: {e}")
-```
-
-**Parameters:**
-
-- `name` (str): The final key to extract
-- `sections` (Iterable[str]): List of section names to traverse
-
-**Returns:** The value at the specified path
-
-**Raises:** `SectionError` if any part of the path doesn't exist
-
-### Advanced Examples
-
-#### Using force_type
-
-Force a specific parser regardless of file extension:
-
-```python
-# Parse a .txt file as YAML
-parser = ConfigParser(paths=[Path("config.txt")], force_type="yaml")
-```
-
-#### Array Merging
-
-Control how arrays are handled during merging:
-
-```python
-# config1.yml
-plugins:
-  - auth
-  - logging
-
-# config2.yml
-plugins:
-  - cache
-  - metrics
-
-# Without merge_arrays (default)
-parser = ConfigParser(paths=[Path("config1.yml"), Path("config2.yml")])
-print(parser.data["plugins"])  # ["cache", "metrics"]
-
-# With merge_arrays=True
-parser = ConfigParser(
-    paths=[Path("config1.yml"), Path("config2.yml")],
-    merge_arrays=True
-)
-print(parser.data["plugins"])  # ["auth", "logging", "cache", "metrics"]
-```
-
----
-
-## get_setting Function
-
-The `get_setting` function retrieves a single configuration value with a complete fallback chain, checking environment variables, multiple config file locations, and finally using a default value.
+`ConfigParser.get_setting` is the only value accessor. It resolves one key through the
+full hierarchy: CLI value, environment variable, the document, then the default.
 
 ### Basic Usage
 
 ```python
-from pathlib import Path
-from dj_settings import get_setting
+from dj_settings import ConfigParser
+
+parser = ConfigParser("/myapp/config.yml")
 
 # Simple usage with default
-debug = get_setting("DEBUG", default=False)
+debug = parser.get_setting("debug", default=False)
 
-# Full usage with all options
-database_url = get_setting(
-    "DATABASE_URL",
-    use_env="DB_URL",  # Check DB_URL environment variable
-    project_dir=Path("/myapp"),  # Look in /myapp/config.yml
-    filename="config.yml",  # Config filename
-    sections=["database"],  # Navigate to database section
-    merge_arrays=False,  # Don't merge arrays
-    rtype=str,  # Return type
-    default="sqlite:///db.sqlite3",  # Fallback value
+# Full usage
+database_url = parser.get_setting(
+    "url",
+    use_env=True,
+    sections=["database"],
+    env_namespace="MYAPP",  # reads MYAPP__DATABASE__URL
+    rtype=str,
+    default="sqlite:///db.sqlite3",
 )
 ```
 
@@ -167,15 +118,15 @@ database_url = get_setting(
 
 ```python
 get_setting(
-    name: str,                                    # Required: setting name
+    name: str,                                           # Required: setting name
     *,
-    use_env: bool | str = True,                  # Environment variable handling
-    project_dir: str | Path | None = None,       # Project directory
-    filename: str | Path | None = None,          # Config filename
-    sections: Iterable[str] = (),                # Config sections to traverse
-    merge_arrays: bool = False,                  # Array merging behavior
-    rtype: Callable[[object], T] | type = ...,   # Return type converter (optional)
-    default: T | Sentinel = UNDEFINED,        # Default value
+    cli_value: T | Sentinel = UNDEFINED,                 # Parsed CLI argument, if any
+    use_env: bool | str = True,                          # Environment variable handling
+    sections: Iterable[str] = (),                        # Config sections to traverse
+    env_namespace: str | Sentinel = UNDEFINED,           # Derived-name prefix
+    rtype: Callable[[object], T] | type | Sentinel = UNDEFINED,  # Coercion (optional)
+    default: T | Sentinel = UNDEFINED,                   # Default value
+    validator: Callable[[object], None] | None = None,   # Contract check (optional)
 ) -> T
 ```
 
@@ -183,61 +134,41 @@ get_setting(
 
 #### `name` (Required)
 
-The name of the setting to retrieve. This serves two purposes:
+The key to resolve. It is looked up in the configuration files under `sections`, and it
+is the final component of the derived environment variable name.
 
-1. As the key name when searching in configuration files
-2. As the default environment variable name (when `use_env=True`)
+#### `cli_value`
+
+A value obtained from a parsed CLI argument. When given, it outranks every other layer.
+Pass `UNDEFINED` (the default) to mean "no CLI value was supplied".
 
 ```python
-# Looks for "DATABASE_URL" in config and env var
-get_setting("DATABASE_URL")
+from dj_settings import UNDEFINED
+
+parser.get_setting(
+    "port",
+    cli_value=args.port if args.port is not None else UNDEFINED,
+    rtype=int,
+    default=8000,
+)
 ```
 
 #### `use_env`
 
 Controls environment variable checking:
 
-| Value   | Behavior                                            |
-| ------- | --------------------------------------------------- |
-| `True`  | Check environment variable with same name as `name` |
-| `str`   | Check the specified environment variable name       |
-| `False` | Skip environment variable checking                  |
+| Value   | Behavior                                                         |
+| ------- | ---------------------------------------------------------------- |
+| `True`  | Derive the name from `env_namespace`, `sections`, and `name`     |
+| `str`   | Use an explicit basename, optionally prefixed by `env_namespace` |
+| `False` | Skip the environment: file-only lookup                           |
 
-```python
-# Check DEBUG env var
-get_setting("debug", use_env=True)
-
-# Check APP_DEBUG env var instead
-get_setting("debug", use_env="APP_DEBUG")
-
-# Don't check any env vars
-get_setting("debug", use_env=False)
-```
-
-#### `project_dir`
-
-The project directory where configuration files are located. When provided, dj_settings will look for `{project_dir}/{filename}` in addition to system and user config directories.
-
-```python
-# Looks in /myapp/config.yml, ~/.config/config.yml, /etc/config.yml
-get_setting("setting", project_dir=Path("/myapp"), filename="config.yml")
-```
-
-#### `filename`
-
-The configuration filename to search for. If not provided, only environment variables are checked.
-
-```python
-# Only checks environment variables
-get_setting("API_KEY", filename=None)
-
-# Checks config files and environment variables
-get_setting("API_KEY", filename="config.yml")
-```
+`use_env=False` with no `default` _is_ file-only lookup - a first-class mode, not a
+convenience flag.
 
 #### `sections`
 
-A list of section names to traverse in the configuration file to reach the setting.
+The section path to the key, in configuration files _and_ in the derived variable name.
 
 ```python
 # For config structure:
@@ -245,170 +176,135 @@ A list of section names to traverse in the configuration file to reach the setti
 #   connection:
 #     url: postgres://...
 
-get_setting("url", filename="config.yml", sections=["database", "connection"])
+parser.get_setting("url", sections=["database", "connection"])
+# files: database -> connection -> url
+# environment: DATABASE__CONNECTION__URL
 ```
 
-#### `merge_arrays`
+#### `env_namespace`
 
-If `True`, arrays in `.d` override files are concatenated instead of replaced.
+A prefix for the environment variable name. Passing it implies that the environment is
+enabled, so combining it with `use_env=False` raises `ValueError`.
+
+`env_namespace=""` is meaningful and distinct from not passing it. With `use_env=True`,
+it drops the namespace while keeping the sections and key; with a string `use_env`, it
+leaves that explicit basename unchanged.
 
 ```python
-# Base config.yml
-hosts:
-  - localhost
+parser.get_setting("user", sections=["application"], env_namespace="DJANGO")
+# reads DJANGO__APPLICATION__USER
 
-# config.yml.d/override.yml
-hosts:
-  - example.com
-
-# With merge_arrays=False (default)
-result = get_setting("hosts", ..., merge_arrays=False)
-# Result: ["example.com"]
-
-# With merge_arrays=True
-result = get_setting("hosts", ..., merge_arrays=True)
-# Result: ["localhost", "example.com"]
+parser.get_setting(
+    "username", sections=["database"], use_env="USER", env_namespace="DJANGO"
+)
+# reads DJANGO__USER; sections and name do not participate with explicit use_env
 ```
+
+With a string `use_env`, the explicit basename remains verbatim while the namespace is
+uppercased: `use_env="app_user", env_namespace="django"` reads
+`DJANGO__app_user`. Without a namespace, `"foo"` still reads `foo`, not `FOO`.
+
+Derivation is one-way: a variable name is never parsed back into sections or keys, and
+the environment cannot bring a new key into existence - it can only supply the value for
+a key you name.
 
 #### `rtype`
 
-A callable to convert the retrieved value to the desired type. If omitted, **no conversion
-is performed** and the value is returned as parsed.
+A callable to coerce the resolved value. If omitted, **no conversion is performed** and
+the value is returned as parsed.
 
 This matters because configuration formats are typed: a list in YAML/TOML/JSON stays a
 list, and `port: 8000` stays an `int`. Environment variables are always strings, so they
 are returned as strings unless you pass an `rtype`.
 
-Note that `rtype` is **not** applied to `default`; a default is returned exactly as you
-passed it, so pass it pre-typed.
+`rtype` is indifferent to which layer produced the value: with `rtype=float`, the string
+`"2.3"` from the environment returns `2.3`, and the int `1` from a YAML file returns
+`1.0`. We parse what you ask for; we do not repair it: `rtype=bool` on the string
+`"false"` returns `True`, because `bool("false")` is `True` - pass a proper parser if you
+need one.
+
+`rtype` is **not** applied to `default`; a default is returned exactly as you passed it,
+so pass it pre-typed. This is deliberate: it allows `None` (or any sentinel of yours) as
+a default for an otherwise-typed setting.
 
 ```python
-# No rtype: values keep the type they had in the config file
-hosts = get_setting("hosts", filename="config.yml", sections=["server"])
-# ["localhost", "example.com"] — a list, not a string
-
 # Convert to integer
-port = get_setting("PORT", rtype=int, default=8000)
+port = parser.get_setting("PORT", rtype=int, default=8000)
 
-# Convert to float
-timeout = get_setting("TIMEOUT", rtype=float, default=30.5)
-
-# Convert to boolean. Coerce to str first: the value may already be a bool if it
-# came from a config file, or a string if it came from the environment.
-debug = get_setting("DEBUG", rtype=lambda x: str(x).lower() == "true", default=False)
+# Convert to boolean, correctly
+debug = parser.get_setting(
+    "DEBUG", rtype=lambda x: str(x).lower() == "true", default=False
+)
 
 # Custom type conversion
 from datetime import datetime
 
-created = get_setting("CREATED", rtype=datetime.fromisoformat)
+created = parser.get_setting("CREATED", rtype=datetime.fromisoformat)
 ```
 
 #### `default`
 
-The fallback value if the setting is not found anywhere. If not provided and the setting is missing, a `TypeError` is raised.
+The fallback value if no layer produced a value. Returned as-is: never coerced, never
+validated. If not provided and the setting is missing, `SettingNotFoundError` is raised.
+
+#### `validator`
+
+A callable that receives the coerced value and only raises; it never returns a value and
+never coerces one. Coercion is `rtype`'s job. The default is `None`, meaning no
+validation. The validator is not applied to a returned `default` - the default is your
+own literal.
 
 ```python
-# With default value
-value = get_setting("MISSING", default="fallback")
+def port_range(value: object) -> None:
+    if not isinstance(value, int) or not 1 <= value <= 65535:
+        msg = f"{value} is not a valid port"
+        raise ValueError(msg)
 
-# Without default (raises TypeError if not found)
-value = get_setting("REQUIRED_SETTING")  # May raise TypeError
+
+port = parser.get_setting("port", sections=["server"], rtype=int, validator=port_range)
 ```
 
 ### Return Value and Exceptions
 
-**Returns:** The setting value converted to `rtype`
+**Returns:** The resolved value, coerced by `rtype` for layers other than the default
 
 **Raises:**
 
-- `TypeError`: If setting is not found and no default is provided
-
-### Complete Example
-
-```python
-from pathlib import Path
-from dj_settings import get_setting
-
-
-# Application configuration
-class AppConfig:
-    @staticmethod
-    def get_database_config():
-        return {
-            "url": get_setting(
-                "DATABASE_URL",
-                use_env="DATABASE_URL",
-                project_dir=Path(__file__).parent,
-                filename="config.yml",
-                sections=["database"],
-                default="sqlite:///dev.db",
-            ),
-            "pool_size": get_setting(
-                "POOL_SIZE",
-                use_env="DB_POOL_SIZE",
-                project_dir=Path(__file__).parent,
-                filename="config.yml",
-                sections=["database"],
-                rtype=int,
-                default=5,
-            ),
-            "debug_queries": get_setting(
-                "DEBUG_QUERIES",
-                use_env=True,
-                project_dir=Path(__file__).parent,
-                filename="config.yml",
-                sections=["database", "options"],
-                rtype=lambda x: x.lower() in ("true", "1", "yes"),
-                default=False,
-            ),
-        }
-```
+- `SettingNotFoundError`: if no layer supplied a value and no default was given. The
+  exception reports the section path being resolved and which layers were consulted
+- `ValueError`: if `env_namespace` is combined with `use_env=False`
+- Whatever your `validator` raises
 
 ### Error Handling
 
 ```python
-from dj_settings.lib.exceptions import SectionError
+from dj_settings import ConfigParser
+from dj_settings.lib.exceptions import SettingNotFoundError
+
+parser = ConfigParser("config.yml")
 
 # With a default: missing sections are silently handled
-value = get_setting(
-    "setting",
-    filename="config.yml",
-    sections=["nonexistent", "path"],
-    default=None,
-)
-# Returns None rather than raising
+value = parser.get_setting("setting", sections=["nonexistent"], default=None)
 
-# Without a default: missing setting raises TypeError
+# Without a default: missing setting raises
 try:
-    value = get_setting(
-        "setting",
-        filename="config.yml",
-        sections=["nonexistent", "path"],
-    )
-except TypeError as e:
+    value = parser.get_setting("setting", sections=["nonexistent"])
+except SettingNotFoundError as e:
     print(f"Required setting not found: {e}")
-
-# Use ConfigParser.extract_value directly if you need SectionError
-parser = ConfigParser(paths=[Path("config.yml")])
-try:
-    value = parser.extract_value("setting", ["nonexistent", "path"])
-except SectionError as e:
-    print(f"Configuration path not found: {e}")
 ```
 
 ---
 
-## Comparison: ConfigParser vs get_setting
+## Comparison: `data` vs `get_setting`
 
-| Feature               | ConfigParser              | get_setting                                   |
-| --------------------- | ------------------------- | --------------------------------------------- |
-| Use Case              | Parse entire config files | Get individual settings                       |
-| Fallback Chain        | No (only specified files) | Yes (env → system → user → project → default) |
-| Environment Variables | No                        | Yes (optional)                                |
-| Multiple Files        | Yes                       | No (single filename)                          |
-| Type Conversion       | Manual                    | Built-in (`rtype`)                            |
-| Lazy Loading          | Yes (`data` property)     | No (immediate)                                |
-| Best For              | Loading full configs      | Getting specific settings                     |
+| Feature               | `data`                   | `get_setting`                                       |
+| --------------------- | ------------------------ | --------------------------------------------------- |
+| Use Case              | Read the merged document | Resolve individual settings                         |
+| Fallback Chain        | Files only               | Yes (CLI → env → project → user → system → default) |
+| Environment Variables | Never                    | Yes (optional)                                      |
+| Type Conversion       | Manual                   | Built-in (`rtype`)                                  |
+| Validation            | Manual                   | Built-in (`validator`)                              |
+| Best For              | Whole-config inspection  | Getting specific settings                           |
 
 ## Next Steps
 

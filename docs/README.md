@@ -27,15 +27,13 @@ Originally designed for Django projects, it has evolved into a versatile configu
 ## Quick Start
 
 ```python
-from pathlib import Path
-from dj_settings import get_setting
+from dj_settings import ConfigParser
 
-# Get a setting with fallback chain
-database_url = get_setting(
-    "DATABASE_URL",
-    use_env="DATABASE_URL",
-    project_dir=Path("/path/to/project"),
-    filename="config.yml",
+parser = ConfigParser("/path/to/project/config.yml")
+
+# Get a setting with the full fallback chain
+database_url = parser.get_setting(
+    "url",
     sections=["database"],
     default="sqlite:///db.sqlite3",
 )
@@ -44,16 +42,15 @@ database_url = get_setting(
 Or use type-safe settings classes:
 
 ```python
-from pathlib import Path
 from dj_settings import config_value, settings_class
 
 
-@settings_class(project_dir=Path("/path/to/project"), filename="config.yml")
+@settings_class("/path/to/project/config.yml", merge_arrays=True)
 class Settings:
-    debug: bool = config_value("DEBUG", use_env=True, default=False)
-    database_url: str = config_value("DATABASE_URL", sections=["database"])
+    debug: bool = config_value("DEBUG", default=False)
+    database_url: str = config_value("url", sections=["database"])
     allowed_hosts: list[str] = config_value(
-        "ALLOWED_HOSTS", sections=["server"], merge_arrays=True, default=["localhost"]
+        "allowed_hosts", sections=["server"], default=["localhost"]
     )
 
 
