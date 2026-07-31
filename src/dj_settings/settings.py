@@ -27,15 +27,15 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class _Undefined(metaclass=Singleton):
+class Sentinel(metaclass=Singleton):
     """Singleton class to represent an undefined value."""
 
 
-_UNDEFINED = _Undefined()
+UNDEFINED = Sentinel()
 
 
-def _convert(value: object, rtype: Callable[[object], T] | type | _Undefined) -> T:
-    if isinstance(rtype, _Undefined):
+def _convert(value: object, rtype: Callable[[object], T] | type | Sentinel) -> T:
+    if isinstance(rtype, Sentinel):
         return cast("T", value)
     return cast("T", rtype(value))
 
@@ -89,8 +89,8 @@ def get_setting(
     filename: str | Path | None = None,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
-    default: T | _Undefined = _UNDEFINED,
+    rtype: Callable[[object], T] | type | Sentinel = UNDEFINED,
+    default: T | Sentinel = UNDEFINED,
 ) -> T:
     if use_env:
         env_var = name if use_env is True else use_env
@@ -112,7 +112,7 @@ def get_setting(
         else:
             return _convert(value, rtype)
 
-    if isinstance(default, _Undefined):
+    if isinstance(default, Sentinel):
         msg = f"Setting {name} not found and no default value provided"
         raise TypeError(msg)
 
@@ -129,7 +129,7 @@ class _SettingsField(Generic[T]):
         use_env: bool | str,
         sections: Iterable[str],
         merge_arrays: bool,
-        rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
+        rtype: Callable[[object], T] | type | Sentinel = UNDEFINED,
         default: T,
     ) -> None:
         self.name = name
@@ -160,8 +160,8 @@ def config_value(  # type: ignore[explicit-any]
     use_env: bool | str = True,
     sections: Iterable[str] = (),
     merge_arrays: bool = False,
-    rtype: Callable[[object], T] | type | _Undefined = _UNDEFINED,
-    default: T | _Undefined = _UNDEFINED,
+    rtype: Callable[[object], T] | type | Sentinel = UNDEFINED,
+    default: T | Sentinel = UNDEFINED,
 ) -> Any:  # noqa: ANN401
     """Get a settings value from the environment or a configuration file.
 

@@ -175,7 +175,7 @@ get_setting(
     sections: Iterable[str] = (),                # Config sections to traverse
     merge_arrays: bool = False,                  # Array merging behavior
     rtype: Callable[[object], T] | type = ...,   # Return type converter (optional)
-    default: T | _Undefined = _UNDEFINED,        # Default value
+    default: T | Sentinel = UNDEFINED,        # Default value
 ) -> T
 ```
 
